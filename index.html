@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang chủ</title>
+    <!-- Page.js router -->
+    <script src="https://unpkg.com/page/page.js"></script>
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="../data/data.js"></script>
+    <script src="../js/script.js"></script>
+    <style>
+    </style>
+</head>
+<body>
+	<header class="main-header">
+		<div class="header-content">
+			<span class="logo">
+				<img src="../data/quoc_huy.png" alt="Quốc huy" class="logo-emblem">
+				UỶ BAN NHÂN DÂN XÃ VĨNH LỘC
+			</span>
+		</div>
+	</header>
+    <main id="app"></main>
+	<footer class="main-footer">
+		<div class="footer-content">
+			<span>&copy; 2025 ADVTV. All rights reserved.</span>
+		</div>
+	</footer>
+    <script>
+        page('/', () => {
+            loadPage('html/login.html', 'app');
+            setTimeout(() => {        
+                // document.body.setAttribute('data-page', 'login');
+                const spinner = document.getElementById('loginSpinner');
+                if (spinner && (!spinner.innerHTML || spinner.innerHTML.trim() === '')) {
+                    if (typeof spinnerSVG !== 'undefined') spinner.innerHTML = spinnerSVG;
+                }
+                let loginForm = document.querySelector('.login-form');
+                if (loginForm) {
+                    loginForm.addEventListener('submit', function(event) {
+                        event.preventDefault();
+                        // Lấy giá trị từ form
+                        let username = document.getElementById('username').value;
+                        let password = document.getElementById('password').value;
+                        login(username, password);
+                    });
+                }
+            }, 100);
+        });
+
+        page('/gate', () => {
+            loadPage('html/gate.html', 'app');
+            setTimeout(() => {           
+                document.body.removeAttribute('data-page');
+                loadProcedureList();
+            }, 100);
+        });
+
+        page('/desk', () => {
+            loadPage('html/desk.html', 'app');
+            setTimeout(() => {           
+                document.body.removeAttribute('data-page');
+                loadDeskQueue();
+                let deskId = localStorage.getItem('deskId') || 'desk1';
+                document.getElementById('btnComplete').onclick = function() {
+                    if (current) showModal('Hoàn thành', current, completeTicket);
+                };
+
+                renderCurrent();
+            }, 100);
+        });
+        
+        page({ hashbang: true });
+    </script>
+</body>
+</html>

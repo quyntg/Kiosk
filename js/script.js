@@ -1,0 +1,536 @@
+let queue = [
+    { number: 'A001', name: 'Nguyễn Văn A' },
+    { number: 'A002', name: 'Trần Thị B' }
+];
+let current = null;
+
+function loadPage(url, id) {
+	const app = document.getElementById(id);
+    fetch(url)
+    .then(res => res.text())
+    .then(html => {
+        app.innerHTML = html;
+        // Nếu là trang login thì luôn ẩn spinner khi load
+        if (url.includes('login')) {
+            setTimeout(() => {
+                var spinner = document.getElementById('loginSpinner');
+                if (spinner) {
+                    spinner.style.display = 'none';
+                    spinner.innerHTML = '';
+                }
+            }, 10);
+        }
+    })
+    .catch(() => {
+        
+    });
+}
+
+function login(username, password) {
+    var errorMsg = document.getElementById('errorMsg');
+    var btn = document.getElementById('loginBtn');
+    var btnText = document.getElementById('loginBtnText');
+    var spinner = document.getElementById('loginSpinner');
+    errorMsg.textContent = '';
+    errorMsg.style.display = 'none';
+    btn.disabled = true;
+    btnText.style.opacity = '0.5';
+    if (typeof spinnerSVG !== 'undefined') spinner.innerHTML = spinnerSVG;
+    spinner.style.display = '';
+    
+    if (!username || !password) {
+        if (errorMsg) {
+            errorMsg.textContent = 'Vui lòng nhập đầy đủ thông tin';
+            errorMsg.style.display = '';
+        }
+        return;
+    }
+    fetch(ggAPIUrl + '?action=login&username=' + encodeURIComponent(username) + '&password=' + encodeURIComponent(password))
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            // Chuyển đến trang chính
+            console.log('Login successful', data);
+            if (data.role === 'admin') {
+                page('/admin');
+            } else if (data.role === 'gate') {
+                page('/gate');
+            } else if (data.role === 'desk') {
+                localStorage.setItem('deskId', data.id);
+                page('/desk');
+            }
+        } else {
+            if (errorMsg) {
+                errorMsg.textContent = data.message || 'Đăng nhập thất bại';
+                errorMsg.style.display = '';
+            }
+        }
+    })
+    .catch(() => {
+        errorMsg.textContent = 'Lỗi kết nối máy chủ.';
+        errorMsg.style.display = '';
+    })
+    .finally(() => {
+        btn.disabled = false;
+        btnText.style.opacity = '1';
+        spinner.style.display = 'none';
+        spinner.innerHTML = '';
+    });
+}
+
+function loadProcedureList() {
+    var container = document.getElementById('gateContainer');
+    // Xóa nội dung cũ
+    container.innerHTML = '';
+    // Hiển thị spinner loading ở giữa màn hình
+    // if (typeof orangeSpinnerSVG !== 'undefined') {
+    //     var overlay = document.createElement('div');
+    //     overlay.id = 'procedureLoadingOverlay';
+    //     overlay.style.position = 'fixed';
+    //     overlay.style.top = 0;
+    //     overlay.style.left = 0;
+    //     overlay.style.width = '100vw';
+    //     overlay.style.height = '100vh';
+    //     overlay.style.background = 'rgba(255,255,255,0.6)';
+    //     overlay.style.display = 'flex';
+    //     overlay.style.justifyContent = 'center';
+    //     overlay.style.alignItems = 'center';
+    //     overlay.style.zIndex = 1000;
+    //     overlay.innerHTML = orangeSpinnerSVG;
+    //     document.body.appendChild(overlay);
+    // }
+
+    // fetch(ggAPIUrl + '?action=loadProcedure')
+    // .then(res => res.json())
+    // .then(data => {
+    //     // Xóa spinner loading
+    //     var overlay = document.getElementById('procedureLoadingOverlay');
+    //     if (overlay) overlay.remove();
+
+    //     if (data && Array.isArray(data)) {
+    //        deskList = data;
+            if (typeof deskList !== 'undefined' && Array.isArray(deskList)) {
+                deskList.forEach(function(item) {
+                    var div = document.createElement('div');
+                    div.className = 'desk-block';
+                    div.textContent = item.name;
+                    div.onclick = function() {
+                        initDeskFunction(this, item.id, item.name);
+                    };
+                    container.appendChild(div);
+                });
+           }
+    //     }
+    // })
+    // .catch(() => {
+    //     var overlay = document.getElementById('procedureLoadingOverlay');
+    //     if (overlay) overlay.remove();
+    //     container.innerHTML = '<div style="color: red; text-align: center; padding: 24px 0;">Không tải được danh sách thủ tục</div>';
+    // });
+}
+
+function showModalConfirm(name, id) {
+    var modal = document.getElementById('modalConfirm');
+    var modalFieldName = document.getElementById('modalFieldName');
+    var btnConfirm = document.getElementById('btnConfirm');
+    var btnCancel = document.getElementById('btnCancel');
+    modalFieldName.textContent = name;
+    modal.style.display = '';
+    // Xoá spinner cũ nếu có
+    let spinnerEl = btnConfirm.querySelector('.spinner-inline');
+    if (spinnerEl) spinnerEl.remove();
+    btnConfirm.disabled = false;
+    btnConfirm.innerHTML = 'Xác nhận';
+
+        btnConfirm.onclick = function() {
+            btnConfirm.disabled = true;
+            if (typeof spinnerSVG !== 'undefined') {
+                btnConfirm.innerHTML = `<span class="spinner-inline" style="vertical-align:middle;display:inline-block;width:1.2em;height:1.2em;">${spinnerSVG}</span> Đang xử lý...`;
+            } else {
+                btnConfirm.innerHTML = 'Đang xử lý...';
+            }
+            fetch(ggAPIUrl + '?action=getCounterById&id=' + encodeURIComponent(id))
+                .then(res => res.json())
+                .then(data => {
+                    if (data && data.success && data.counter) {
+                        // Sau khi lấy số thành công, gọi updateCounterById
+                        fetch(ggAPIUrl + '?action=updateCounterById&id=' + encodeURIComponent(id))
+                            .then(res2 => res2.json())
+                            .then(() => {
+                                btnConfirm.disabled = false;
+                                btnConfirm.innerHTML = 'Xác nhận';
+                                modal.style.display = 'none';
+                                showResultModal(data.counter);
+                            })
+                            .catch(() => {
+                                btnConfirm.disabled = false;
+                                btnConfirm.innerHTML = 'Xác nhận';
+                                modal.style.display = 'none';
+                                showResultModal(data.counter);
+                            });
+                    } else {
+                        btnConfirm.disabled = false;
+                        btnConfirm.innerHTML = 'Xác nhận';
+                        modal.style.display = 'none';
+                        showResultModal(null);
+                    }
+                })
+                .catch(() => {
+                    btnConfirm.disabled = false;
+                    btnConfirm.innerHTML = 'Xác nhận';
+                    modal.style.display = 'none';
+                    showResultModal(null);
+                });
+        };
+
+    btnCancel.onclick = function() {
+        modal.style.display = 'none';
+    };
+}
+// Hiện modal kết quả lấy số
+function showResultModal(counter) {
+    // Tạo modal nếu chưa có
+    let modal = document.getElementById('modalResult');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'modalResult';
+        modal.className = 'modal-overlay';
+        modal.innerHTML = `
+            <div class="modal-box">
+                <div id="modalResultMsg" class="modal-title"></div>
+                <div class="modal-actions">
+                    <button id="btnPrint" class="modal-btn confirm" style="display: none;">In phiếu</button>
+                    <button id="btnCloseResult" class="modal-btn cancel">Đóng</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    }
+    const msg = modal.querySelector('#modalResultMsg');
+    const btnPrint = modal.querySelector('#btnPrint');
+    const btnClose = modal.querySelector('#btnCloseResult');
+    if (counter) {
+        msg.innerHTML = `Bạn đã lấy số thành công!<br><span style='font-size: 2rem; color: #000; font-weight: 700;'>${counter}</span>`;
+        btnPrint.style.display = '';
+        btnPrint.onclick = function() {
+            // Dữ liệu in, có thể là text hoặc HTML tuỳ máy in hỗ trợ
+            const printData = `
+                Số thứ tự: ${counter}\n
+                ----------------------\n
+                Vui lòng chờ đến lượt\n
+            `;
+
+            // Địa chỉ WebPrint server, ví dụ Epson: http://localhost:8008/ (hoặc IP máy in)
+            fetch('http://localhost:8008/print', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'text/plain'
+                },
+                body: printData
+            })
+            .then(res => {
+                if (res.ok) {
+                    alert('In thành công!');
+                } else {
+                    alert('Không in được phiếu!');
+                }
+            })
+            .catch(() => {
+                alert('Không kết nối được WebPrint!');
+            });
+        };
+    } else {
+        msg.innerHTML = `<span style='color: red;'>Lấy số thất bại. Vui lòng thử lại!</span>`;
+        btnPrint.style.display = 'none';
+    }
+    btnClose.onclick = function() {
+        modal.style.display = 'none';
+    };
+    modal.style.display = 'flex';
+}
+
+function initDeskFunction(div, id, name) {
+    document.querySelectorAll('.desk-block').forEach(e => e.classList.remove('active'));
+    div.classList.add('active');
+    showModalConfirm(name, id);
+}
+
+// Hiển thị spinner overlay toàn màn hình
+function showDeskSpinner() {
+    let overlay = document.getElementById('deskLoadingOverlay');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'deskLoadingOverlay';
+        overlay.style.position = 'fixed';
+        overlay.style.top = 0;
+        overlay.style.left = 0;
+        overlay.style.width = '100vw';
+        overlay.style.height = '100vh';
+        overlay.style.background = 'rgba(255,255,255,0.6)';
+        overlay.style.display = 'flex';
+        overlay.style.justifyContent = 'center';
+        overlay.style.alignItems = 'center';
+        overlay.style.zIndex = 1000;
+        overlay.innerHTML = (typeof orangeSpinnerSVG !== 'undefined' ? orangeSpinnerSVG : (typeof spinnerSVG !== 'undefined' ? spinnerSVG : 'Loading...'));
+        document.body.appendChild(overlay);
+    } else {
+        overlay.style.display = 'flex';
+    }
+}
+
+function hideDeskSpinner() {
+    let overlay = document.getElementById('deskLoadingOverlay');
+    if (overlay) overlay.style.display = 'none';
+}
+
+// Load queue từ backend và render
+function loadDeskQueue() {
+    showDeskSpinner();
+    const deskId = localStorage.getItem('deskId');
+    if (!deskId) {
+        hideDeskSpinner();
+        return;
+    }
+    getScheduleById(deskId).then(data => {
+        // data.queue dạng "1000,1001,1002" => mảng queue
+        if (data && data.success && typeof data.queue === 'string') {
+            queue = data.queue.split(',').filter(x => x).map(num => ({ number: num, name: '' }));
+        } else {
+            queue = [];
+        }
+        renderQueue();
+        hideDeskSpinner();
+    }).catch(() => {
+        queue = [];
+        renderQueue();
+        hideDeskSpinner();
+    });
+}
+// Lấy toàn bộ dữ liệu schedule theo id từ backend
+function getScheduleById(id) {
+    return fetch(ggAPIUrl + '?action=getScheduleById&id=' + encodeURIComponent(id))
+        .then(res => res.json());
+}
+
+
+// Phát chuỗi file mp3: ting, moi, các số, denquay, số quầy
+// textArr: mảng chuỗi số, ví dụ ['1','0','0','0']
+// deskId: số quầy (chuỗi)
+function playQueueAudio(textArr, deskId) {
+    // Cần các biến mp3AlertUrl, mp3BeforeUrl, mp3AfterUrl, mp3So, mp3QuayPrefix (object hoặc function trả về url)
+    // mp3So: object, key là số, value là url file mp3 số
+    // mp3QuayPrefix: object, key là deskId, value là url file mp3 số quầy
+    function playMp3(url) {
+        return new Promise(resolve => {
+            if (!url) return resolve();
+            const audio = new Audio(url);
+            audio.playbackRate = 1; // tăng tốc độ phát
+            audio.onended = resolve;
+            audio.onerror = resolve;
+            audio.currentTime = 0;
+            if (audio.readyState >= 1) {
+                audio.play();
+            } else {
+                audio.onloadedmetadata = () => {
+                    audio.currentTime = 0;
+                    audio.play();
+                };
+            }
+        });
+    }
+    // Xây dựng chuỗi file mp3 cần phát
+    let files = [];
+    if (typeof mp3AlertUrl !== 'undefined') files.push(mp3AlertUrl);
+    if (typeof mp3BeforeUrl !== 'undefined') files.push(mp3BeforeUrl);
+    if (Array.isArray(textArr)) {
+        textArr.forEach(num => {
+            if (num == '0') files.push(mp30);
+            if (num == '1') files.push(mp31);
+            if (num == '2') files.push(mp32);
+            if (num == '3') files.push(mp33);
+            if (num == '4') files.push(mp34);
+            if (num == '5') files.push(mp35);
+            if (num == '6') files.push(mp36);
+            if (num == '7') files.push(mp37);
+            if (num == '8') files.push(mp38);
+            if (num == '9') files.push(mp39);
+        });
+    }
+    if (typeof mp3AfterUrl !== 'undefined') files.push(mp3AfterUrl);
+    if (deskId == '0') files.push(mp30);
+    if (deskId == '1') files.push(mp31);
+    if (deskId == '2') files.push(mp32);
+    if (deskId == '3') files.push(mp33);
+    if (deskId == '4') files.push(mp34);
+    if (deskId == '5') files.push(mp35);
+    if (deskId == '6') files.push(mp36);
+    if (deskId == '7') files.push(mp37);
+    if (deskId == '8') files.push(mp38);
+    if (deskId == '9') files.push(mp39);
+    // Phát lần lượt từng file
+    let p = Promise.resolve();
+    files.forEach(url => {
+        p = p.then(() => playMp3(url));
+    });
+    return p;
+}
+
+function renderQueue() {
+    const queueList = document.getElementById('queueList');
+    queueList.innerHTML = '';
+    queue.forEach((item, idx) => {
+        const div = document.createElement('div');
+        div.className = 'queue-item';
+        div.innerHTML = `
+            <span class="ticket-number">${item.number}</span>
+            <span class="ticket-name"></span>
+            <button class="btn-call">Gọi số</button>
+            <button class="btn-skip">Bỏ qua</button>
+        `;
+        div.querySelector('.btn-call').onclick = () => {
+            // Gọi API callCounterById
+            showModal('Gọi số', item, () => {
+                initSpinner();
+                const deskId = localStorage.getItem('deskId');
+                fetch(ggAPIUrl + '?action=callCounterById&id=' + encodeURIComponent(deskId) + '&counter=' + encodeURIComponent(item.number))
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data && data.success && data.text) {
+                            const modal = document.getElementById('modalConfirm');
+                            modal.style.display = 'none';
+                            callTicket(idx, false);
+                            playQueueAudio(data.text, deskId.replace('desk', ''));                    
+                        }
+                    }); 
+            });
+        };
+        div.querySelector('.btn-skip').onclick = () => {
+            showModal('Bỏ qua', item, () => {
+                initSpinner();
+                const deskId = localStorage.getItem('deskId');
+                fetch(ggAPIUrl + '?action=updateProcessing&id=' + encodeURIComponent(deskId) + '&counter=' + encodeURIComponent(item.number) + '&type=0')
+                    .then(res => res.json())
+                    .then(() => {
+                        // Xoá khỏi queue local
+                        queue.splice(idx, 1);
+                        renderQueue();
+                        const modal = document.getElementById('modalConfirm');
+                        modal.style.display = 'none';
+                    });
+            });
+        };
+        queueList.appendChild(div);
+    });
+}
+
+function renderCurrent() {
+    const num = document.getElementById('currentTicketNumber');
+    const name = document.getElementById('currentTicketName');
+    const btn = document.getElementById('btnComplete');
+    const btnRecall = document.getElementById('btnRecall');
+    const btnReskip = document.getElementById('btnReskip');
+    if (current) {
+        num.textContent = current.number;
+        name.textContent = current.name;
+        btn.style.display = '';
+        if (btnRecall) btnRecall.style.display = '';
+        if (btnReskip) btnReskip.style.display = '';
+        // Gán sự kiện gọi lại
+        const recallHandler = () => {
+            const deskId = localStorage.getItem('deskId');
+            fetch(ggAPIUrl + '?action=callCounterById&id=' + encodeURIComponent(deskId) + '&counter=' + encodeURIComponent(current.number))
+                .then(res => res.json())
+                .then(data => {
+                    if (data && data.success && data.text) {
+                        playQueueAudio(data.text, deskId.replace('desk', ''));
+                    }
+                });
+        };
+        if (btnRecall) btnRecall.onclick = recallHandler;
+        if (btnReskip) {
+            btnReskip.onclick = () => {
+                showModal('Bỏ qua', current, () => {
+                    initSpinner();
+                    const deskId = localStorage.getItem('deskId');
+                    fetch(ggAPIUrl + '?action=updateProcessing&id=' + encodeURIComponent(deskId) + '&counter=' + encodeURIComponent(current.number) + '&type=0')
+                        .then(res => res.json())
+                        .then(() => {
+                            current = null;
+                            renderCurrent();
+                            loadDeskQueue();
+                            const modal = document.getElementById('modalConfirm');
+                            modal.style.display = 'none';
+                        });
+                });
+            };
+        }
+        if (btn) {
+            btn.onclick = () => {
+                showModal('Hoàn thành', current, () => {
+                    initSpinner();
+                    const deskId = localStorage.getItem('deskId');
+                    fetch(ggAPIUrl + '?action=updateProcessing&id=' + encodeURIComponent(deskId) + '&counter=' + encodeURIComponent(current.number) + '&type=1')
+                        .then(res => res.json())
+                        .then(() => {
+                            current = null;
+                            renderCurrent();
+                            loadDeskQueue();
+                            const modal = document.getElementById('modalConfirm');
+                            modal.style.display = 'none';
+                        });
+                });
+            };
+        }
+    } else {
+        num.textContent = '--';
+        name.textContent = 'Chưa có hồ sơ';
+        btn.style.display = 'none';
+        if (btnRecall) btnRecall.style.display = 'none';
+        if (btnReskip) btnReskip.style.display = 'none';
+    }
+}
+
+function callTicket(idx, removeFromQueue = false) {
+    current = queue[idx];
+    if (removeFromQueue) queue.splice(idx, 1);
+    renderQueue();
+    renderCurrent();
+}
+
+function skipTicket(idx) {
+    queue.splice(idx, 1);
+    renderQueue();
+}
+
+function completeTicket() {
+    current = null;
+    renderCurrent();
+}
+
+function initSpinner() {
+    const btnOk = document.getElementById('modalOk');
+    btnOk.disabled = true;
+    if (typeof spinnerSVG !== 'undefined') {
+        btnOk.innerHTML = `<span class="spinner-inline">${spinnerSVG}</span> Đang xử lý...`;
+    } else {
+        btnOk.innerHTML = 'Đang xử lý...';
+    }
+}
+
+function showModal(action, item, onOk) {
+    const modal = document.getElementById('modalConfirm');
+    const msg = document.getElementById('modalMsg');
+    msg.textContent = `Xác nhận ${action.toLowerCase()} cho số ${item.number} ?`;
+    modal.style.display = 'flex';
+    const btnOk = document.getElementById('modalOk');
+    const btnCancel = document.getElementById('modalCancel');
+    btnOk.disabled = false;
+    btnOk.innerHTML = 'Xác nhận';
+    btnOk.onclick = () => {
+        // Chỉ gọi onOk, hiệu ứng spinner sẽ được xử lý trong onOk (ở renderCurrent)
+        onOk();
+    };
+    btnCancel.onclick = () => {
+        modal.style.display = 'none';
+    };
+}
