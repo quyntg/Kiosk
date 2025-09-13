@@ -288,8 +288,9 @@ qz.websocket.connect()
 
 qz.security.setCertificatePromise(() => "../data/mycert.pfx");
 
-qz.security.setSignaturePromise(toSign => {
-    return qz.security.sign(toSign, "../data/mycert.pfx", "123456");
+qz.security.setSignaturePromise(() => {
+    // Trả về promise resolve, QZ Tray tự ký
+    return Promise.resolve();
 });
 
 // Hiện modal kết quả lấy số
