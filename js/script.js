@@ -322,7 +322,7 @@ async function printReceipt(text) {
 
     const body = {
         printerId: printerId,
-        title: "Receipt",
+        title: "Queue Ticket",
         contentType: "raw_base64",
         content: contentBase64
     };
@@ -330,8 +330,8 @@ async function printReceipt(text) {
     const res = await fetch("https://api.printnode.com/printjobs", {
         method: "POST",
         headers: {
-        "Authorization": "Basic " + btoa(apiKey + ":"),
-        "Content-Type": "application/json"
+            "Authorization": "Basic " + Buffer.from(apiKey + ":").toString("base64"),
+            "Content-Type": "application/json"
         },
         body: JSON.stringify(body)
     });
@@ -379,26 +379,37 @@ function showResultModal(counter) {
         btnPrint.onclick = function() {
             // Hàm bỏ dấu tiếng Việt
             function removeVietnameseTones(str) {
-                return str.normalize('NFD').replace(/\p{Diacritic}/gu, '').replace(/đ/g, 'd').replace(/Đ/g, 'D');
+                return str.normalize('NFD')
+                .replace(/\p{Diacritic}/gu, '')
+                .replace(/đ/g, 'd')
+                .replace(/Đ/g, 'D');
             }
-            let text = [
-                '\x1B\x61\x01', // Căn giữa
-                '\x1D\x21\x01', // Font nhỏ
-                removeVietnameseTones('UY BAN NHAN DAN XA TAY DO') + '\n',
-                removeVietnameseTones('THANH HOA') + '\n',
-                '------------------------------------------\n',
-                removeVietnameseTones('PHIEU SO THU TU') + '\n',
-                '------------------------------------------\n\n',
-                '\x1B\x61\x01', // Căn giữa
-                '\x1D\x21\x33', // Font lớn
-                counter + '\n',
-                '\x1D\x21\x01', // Font nhỏ lại
-                '\n',
-                removeVietnameseTones('Vui long cho den luot') + '\n',
-                '\n\n\n', // vài dòng trắng
-                '\x1D\x21\x00', // Trở lại font thường
-                '\x1D\x56\x42\x10' // ✅ feed 16 dòng rồi cut
-            ];
+
+            function buildTicket(counter) {
+                let parts = [
+                    '\x1B\x61\x01', // Căn giữa
+                    '\x1D\x21\x01', // Font nhỏ
+                    removeVietnameseTones('UY BAN NHAN DAN XA TAY DO') + '\n',
+                    removeVietnameseTones('THANH HOA') + '\n',
+                    '------------------------------------------\n',
+                    removeVietnameseTones('PHIEU SO THU TU') + '\n',
+                    '------------------------------------------\n\n',
+                    '\x1B\x61\x01', // Căn giữa
+                    '\x1D\x21\x33', // Font lớn
+                    counter + '\n',
+                    '\x1D\x21\x01', // Font nhỏ lại
+                    '\n',
+                    removeVietnameseTones('Vui long cho den luot') + '\n',
+                    '\n\n\n', // vài dòng trắng
+                    '\x1D\x21\x00', // Trở lại font thường
+                    '\x1D\x56\x42\x10' // feed 16 dòng rồi cut
+                ];
+
+                // Gộp lại thành buffer nhị phân
+                return Buffer.from(parts.join(""), "binary");
+            }
+
+            let text = buildTicket(counter);
             printReceipt(text);
             // Kết nối QZ Tray
             // connectQZ().then(() => {
