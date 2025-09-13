@@ -65,10 +65,7 @@
             setTimeout(() => {           
                 document.body.removeAttribute('data-page');
                 loadProcedureList();
-                // Lắng nghe hàng đợi gọi số và phát tiếng lần lượt ở gate
-                if (typeof listenCallQueueAndPlay === 'function') {
-                    listenCallQueueAndPlay();
-                }
+                listenCallQueueAndPlay();
             }, 1000);
         });
 

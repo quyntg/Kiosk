@@ -442,23 +442,36 @@ function playQueueAudio(textArr, deskId) {
 }
 
 // Máy desk lắng nghe callQueue và phát tiếng lần lượt
+// Sửa: Phát lần lượt các số trong callQueue, không bị mất số khi nhiều số được thêm cùng lúc
+let audioQueue = [];
+let isPlayingAudio = false;
 function listenCallQueueAndPlay() {
     if (typeof db === 'undefined' || !db.ref) return;
-    let playing = false;
     db.ref('callQueue').on('child_added', function processQueue(snapshot) {
         const callData = snapshot.val();
-        if (!callData.played && !playing) {
-            playing = true;
+        if (!callData.played) {
             // Đánh dấu đã phát để tránh phát lại
             snapshot.ref.update({ played: true });
-            // Phát tiếng gọi số
-            const textArr = callData.counter.toString().split("");
-            playQueueAudio(textArr, callData.deskId).then(() => {
-                setTimeout(() => {
-                    playing = false;
-                }, 2000);
+            audioQueue.push({
+                counter: callData.counter,
+                deskId: callData.deskId
             });
+            playNextAudioInQueue();
         }
+    });
+}
+
+function playNextAudioInQueue() {
+    if (isPlayingAudio || audioQueue.length === 0) return;
+    isPlayingAudio = true;
+    const item = audioQueue.shift();
+    const textArr = item.counter.toString().split("");
+    console.log('Playing callQueue:', textArr, 'deskId:', item.deskId);
+    playQueueAudio(textArr, item.deskId).then(() => {
+        setTimeout(() => {
+            isPlayingAudio = false;
+            playNextAudioInQueue();
+        }, 2000);
     });
 }
 
