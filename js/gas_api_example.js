@@ -143,7 +143,7 @@ function loadProcedure() {
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('procedure');
   const data = sheet.getDataRange().getValues();
   let result = [];
-  for (var i = 0; i < data.length; i++) {
+  for (var i = 1; i < data.length; i++) {
     result.push({
       id: data[i][0],
       name: data[i][1]

@@ -1,7 +1,7 @@
 // Đường dẫn file mp3 phát trước và sau khi phát voice (có thể thay đổi tuỳ ý)
-var mp3AlertUrl = './data/ting.mp3';
-var mp3BeforeUrl = './data/moi.mp3';
-var mp3AfterUrl = './data/denquay.mp3';
+var mp3BeforeUrl = './data/xin moi.mp3';
+var mp3AfterUrl = './data/den quay so.mp3';
+var mp3EndUrl = './data/phuc vu.mp3';
 var mp30 = './data/0.mp3'; // file mp3 đọc số 0
 var mp31 = './data/1.mp3'; // file mp3 đọc số 1
 var mp32 = './data/2.mp3'; // file mp3 đọc số 2

@@ -17,7 +17,7 @@
 		<div class="header-content">
 			<span class="logo">
 				<img src="../data/quoc_huy.png" alt="Quốc huy" class="logo-emblem">
-				UỶ BAN NHÂN DÂN XÃ VĨNH LỘC
+				UỶ BAN NHÂN DÂN XÃ TÂY ĐÔ - THANH HOÁ
 			</span>
 		</div>
 	</header>
@@ -60,9 +60,10 @@
         page('/desk', () => {
             loadPage('html/desk.html', 'app');
             setTimeout(() => {           
-                document.body.removeAttribute('data-page');
+                document.body.removeAttribute('data-page');                
+                startDeskAutoReload();
                 loadDeskQueue();
-                let deskId = localStorage.getItem('deskId') || 'desk1';
+                let deskId = sessionStorage.getItem('deskId') || 'desk1';
                 document.getElementById('btnComplete').onclick = function() {
                     if (current) showModal('Hoàn thành', current, completeTicket);
                 };

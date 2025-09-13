@@ -218,7 +218,7 @@ button[type="submit"]:hover {
     min-height: 60px;
     max-width: 220px;
     text-align: center;
-    font-size: 1rem;
+    font-size: 20px;
     font-weight: 600;
     color: #ff9800;
     cursor: pointer;

@@ -4,6 +4,34 @@ let queue = [
 ];
 let current = null;
 
+// --- Desk auto refresh queue logic ---
+let deskAutoReloadTimer = null;
+let deskAutoReloadActive = false;
+function startDeskAutoReload() {
+    if (deskAutoReloadActive) return;
+    deskAutoReloadActive = true;
+    function reload() {
+        if (!deskAutoReloadActive) return;
+        // Kiểm tra nếu có số đang xử lý thì không load lại
+        if (current) {
+            console.log('[DeskAutoReload] Đang có số đang xử lý, tạm dừng loadDeskQueue');
+            deskAutoReloadTimer = setTimeout(reload, 2 * 60 * 1000);
+            return;
+        }
+        console.log('[DeskAutoReload] loadDeskQueue');
+        loadDeskQueue();
+        deskAutoReloadTimer = setTimeout(reload, 2 * 60 * 1000);
+    }
+    reload();
+}
+
+function stopDeskAutoReload() {
+    deskAutoReloadActive = false;
+    if (deskAutoReloadTimer) clearTimeout(deskAutoReloadTimer);
+    deskAutoReloadTimer = null;
+    console.log('[DeskAutoReload] Đã dừng auto reload');
+}
+
 function loadPage(url, id) {
 	const app = document.getElementById(id);
     fetch(url)
@@ -50,13 +78,12 @@ function login(username, password) {
     .then(data => {
         if (data.success) {
             // Chuyển đến trang chính
-            console.log('Login successful', data);
             if (data.role === 'admin') {
                 page('/admin');
             } else if (data.role === 'gate') {
                 page('/gate');
             } else if (data.role === 'desk') {
-                localStorage.setItem('deskId', data.id);
+                sessionStorage.setItem('deskId', data.id);
                 page('/desk');
             }
         } else {
@@ -83,32 +110,32 @@ function loadProcedureList() {
     // Xóa nội dung cũ
     container.innerHTML = '';
     // Hiển thị spinner loading ở giữa màn hình
-    // if (typeof orangeSpinnerSVG !== 'undefined') {
-    //     var overlay = document.createElement('div');
-    //     overlay.id = 'procedureLoadingOverlay';
-    //     overlay.style.position = 'fixed';
-    //     overlay.style.top = 0;
-    //     overlay.style.left = 0;
-    //     overlay.style.width = '100vw';
-    //     overlay.style.height = '100vh';
-    //     overlay.style.background = 'rgba(255,255,255,0.6)';
-    //     overlay.style.display = 'flex';
-    //     overlay.style.justifyContent = 'center';
-    //     overlay.style.alignItems = 'center';
-    //     overlay.style.zIndex = 1000;
-    //     overlay.innerHTML = orangeSpinnerSVG;
-    //     document.body.appendChild(overlay);
-    // }
+    if (typeof orangeSpinnerSVG !== 'undefined') {
+        var overlay = document.createElement('div');
+        overlay.id = 'procedureLoadingOverlay';
+        overlay.style.position = 'fixed';
+        overlay.style.top = 0;
+        overlay.style.left = 0;
+        overlay.style.width = '100vw';
+        overlay.style.height = '100vh';
+        overlay.style.background = 'rgba(255,255,255,0.6)';
+        overlay.style.display = 'flex';
+        overlay.style.justifyContent = 'center';
+        overlay.style.alignItems = 'center';
+        overlay.style.zIndex = 1000;
+        overlay.innerHTML = orangeSpinnerSVG;
+        document.body.appendChild(overlay);
+    }
 
-    // fetch(ggAPIUrl + '?action=loadProcedure')
-    // .then(res => res.json())
-    // .then(data => {
-    //     // Xóa spinner loading
-    //     var overlay = document.getElementById('procedureLoadingOverlay');
-    //     if (overlay) overlay.remove();
+    fetch(ggAPIUrl + '?action=loadProcedure')
+    .then(res => res.json())
+    .then(data => {
+        // Xóa spinner loading
+        var overlay = document.getElementById('procedureLoadingOverlay');
+        if (overlay) overlay.remove();
 
-    //     if (data && Array.isArray(data)) {
-    //        deskList = data;
+        if (data && Array.isArray(data)) {
+           deskList = data;
             if (typeof deskList !== 'undefined' && Array.isArray(deskList)) {
                 deskList.forEach(function(item) {
                     var div = document.createElement('div');
@@ -120,13 +147,13 @@ function loadProcedureList() {
                     container.appendChild(div);
                 });
            }
-    //     }
-    // })
-    // .catch(() => {
-    //     var overlay = document.getElementById('procedureLoadingOverlay');
-    //     if (overlay) overlay.remove();
-    //     container.innerHTML = '<div style="color: red; text-align: center; padding: 24px 0;">Không tải được danh sách thủ tục</div>';
-    // });
+        }
+    })
+    .catch(() => {
+        var overlay = document.getElementById('procedureLoadingOverlay');
+        if (overlay) overlay.remove();
+        container.innerHTML = '<div style="color: red; text-align: center; padding: 24px 0;">Không tải được danh sách thủ tục</div>';
+    });
 }
 
 function showModalConfirm(name, id) {
@@ -286,7 +313,7 @@ function hideDeskSpinner() {
 // Load queue từ backend và render
 function loadDeskQueue() {
     showDeskSpinner();
-    const deskId = localStorage.getItem('deskId');
+    const deskId = sessionStorage.getItem('deskId');
     if (!deskId) {
         hideDeskSpinner();
         return;
@@ -340,7 +367,6 @@ function playQueueAudio(textArr, deskId) {
     }
     // Xây dựng chuỗi file mp3 cần phát
     let files = [];
-    if (typeof mp3AlertUrl !== 'undefined') files.push(mp3AlertUrl);
     if (typeof mp3BeforeUrl !== 'undefined') files.push(mp3BeforeUrl);
     if (Array.isArray(textArr)) {
         textArr.forEach(num => {
@@ -367,6 +393,7 @@ function playQueueAudio(textArr, deskId) {
     if (deskId == '7') files.push(mp37);
     if (deskId == '8') files.push(mp38);
     if (deskId == '9') files.push(mp39);
+    if (typeof mp3EndUrl !== 'undefined') files.push(mp3EndUrl);
     // Phát lần lượt từng file
     let p = Promise.resolve();
     files.forEach(url => {
@@ -391,7 +418,7 @@ function renderQueue() {
             // Gọi API callCounterById
             showModal('Gọi số', item, () => {
                 initSpinner();
-                const deskId = localStorage.getItem('deskId');
+                const deskId = sessionStorage.getItem('deskId');
                 fetch(ggAPIUrl + '?action=callCounterById&id=' + encodeURIComponent(deskId) + '&counter=' + encodeURIComponent(item.number))
                     .then(res => res.json())
                     .then(data => {
@@ -407,7 +434,7 @@ function renderQueue() {
         div.querySelector('.btn-skip').onclick = () => {
             showModal('Bỏ qua', item, () => {
                 initSpinner();
-                const deskId = localStorage.getItem('deskId');
+                const deskId = sessionStorage.getItem('deskId');
                 fetch(ggAPIUrl + '?action=updateProcessing&id=' + encodeURIComponent(deskId) + '&counter=' + encodeURIComponent(item.number) + '&type=0')
                     .then(res => res.json())
                     .then(() => {
@@ -437,7 +464,7 @@ function renderCurrent() {
         if (btnReskip) btnReskip.style.display = '';
         // Gán sự kiện gọi lại
         const recallHandler = () => {
-            const deskId = localStorage.getItem('deskId');
+            const deskId = sessionStorage.getItem('deskId');
             fetch(ggAPIUrl + '?action=callCounterById&id=' + encodeURIComponent(deskId) + '&counter=' + encodeURIComponent(current.number))
                 .then(res => res.json())
                 .then(data => {
@@ -451,7 +478,7 @@ function renderCurrent() {
             btnReskip.onclick = () => {
                 showModal('Bỏ qua', current, () => {
                     initSpinner();
-                    const deskId = localStorage.getItem('deskId');
+                    const deskId = sessionStorage.getItem('deskId');
                     fetch(ggAPIUrl + '?action=updateProcessing&id=' + encodeURIComponent(deskId) + '&counter=' + encodeURIComponent(current.number) + '&type=0')
                         .then(res => res.json())
                         .then(() => {
@@ -468,7 +495,7 @@ function renderCurrent() {
             btn.onclick = () => {
                 showModal('Hoàn thành', current, () => {
                     initSpinner();
-                    const deskId = localStorage.getItem('deskId');
+                    const deskId = sessionStorage.getItem('deskId');
                     fetch(ggAPIUrl + '?action=updateProcessing&id=' + encodeURIComponent(deskId) + '&counter=' + encodeURIComponent(current.number) + '&type=1')
                         .then(res => res.json())
                         .then(() => {
