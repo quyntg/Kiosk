@@ -193,10 +193,15 @@ function showModalConfirm(name, id) {
     };
 }
 
-qz.security.setCertificatePromise(function(resolve, reject) { resolve(); });
-qz.security.setSignaturePromise(function(toSign) {
-  return function(resolve, reject) { resolve(); };
+qz.security.setCertificatePromise((resolve, reject) => {
+    fetch("../cert/qz-tray.cer")
+        .then(res => res.text())
+        .then(cert => resolve(cert))
+        .catch(err => reject(err));
 });
+
+// Tạm thời bỏ qua chữ ký (chỉ để test)
+qz.security.setSignaturePromise((toSign) => (resolve, reject) => { resolve(); });
 
 function connectQZ() {
   if (!qz.websocket.isActive()) {
