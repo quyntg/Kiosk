@@ -257,15 +257,17 @@ const privateKeyPem = `
     -----END RSA PRIVATE KEY-----
 `;
 
-// Nạp hàm ký bằng private key
-qz.security.setSignaturePromise((toSign) => (resolve, reject) => {
-    try {
-        const signature = signWithPrivateKey(privateKeyPem, toSign);
-        resolve(signature);
-    } catch (err) {
-        reject(err);
-    }
-});
+// // Nạp hàm ký bằng private key
+// qz.security.setSignaturePromise((toSign) => (resolve, reject) => {
+//     try {
+//         const signature = signWithPrivateKey(privateKeyPem, toSign);
+//         resolve(signature);
+//     } catch (err) {
+//         reject(err);
+//     }
+// });
+
+qz.security.setSignaturePromise((toSign) => (resolve, reject) => { resolve(); });
 
 function connectQZ() {
   if (!qz.websocket.isActive()) {
