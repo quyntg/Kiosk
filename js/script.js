@@ -318,14 +318,18 @@ function showResultModal(counter) {
         msg.innerHTML = `Bạn đã lấy số thành công!<br><span style='font-size: 2rem; color: #000; font-weight: 700;'>${counter}</span>`;
         btnPrint.style.display = '';
         btnPrint.onclick = function() {
-            // Thêm hiệu ứng xoay
-            btnPrint.classList.add('btnPrint-rotate');
             btnPrint.disabled = true;
+            const oldHtml = btnPrint.innerHTML;
+            if (typeof spinnerSVG !== 'undefined') {
+                btnPrint.innerHTML = `<span class="spinner-inline">${spinnerSVG}</span> Đang in...`;
+            } else {
+                btnPrint.innerHTML = 'Đang in...';
+            }
             printTicket(counter).then(() => { 
                 console.log("✅ In thành công");
             }).finally(() => {
-                btnPrint.classList.remove('btnPrint-rotate');
                 btnPrint.disabled = false;
+                btnPrint.innerHTML = oldHtml;
             });
         };
     } else {
