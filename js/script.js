@@ -441,6 +441,21 @@ function playQueueAudio(textArr, deskId) {
     return p;
 }
 
+// Máy desk lắng nghe callQueue và phát tiếng lần lượt
+function listenCallQueueAndPlay() {
+    if (typeof db === 'undefined' || !db.ref) return;
+    db.ref('callQueue').on('child_added', function(snapshot) {
+        const callData = snapshot.val();
+        if (!callData.played) {
+            // Đánh dấu đã phát để tránh phát lại
+            snapshot.ref.update({ played: true });
+            // Phát tiếng gọi số
+            const textArr = callData.counter.toString().split("");
+            playQueueAudio(textArr, callData.deskId);
+        }
+    });
+}
+
 function renderQueue() {
     const queueList = document.getElementById('queueList');
     queueList.innerHTML = '';
@@ -464,7 +479,8 @@ function renderQueue() {
                         if (data && data.success && data.text) {
                             const modal = document.getElementById('modalConfirm');
                             modal.style.display = 'none';
-                            db.ref("data").set({ counter: data.text , deskId: deskId.replace('desk', '') });
+                            // Đẩy vào hàng đợi callQueue trên Firebase
+                            db.ref('callQueue').push({ counter: data.text, deskId: deskId.replace('desk', ''), timestamp: Date.now(), played: false });
                             callTicket(idx, false);                 
                         }
                     }); 
