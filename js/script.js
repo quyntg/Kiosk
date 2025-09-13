@@ -193,6 +193,8 @@ function showModalConfirm(name, id) {
     };
 }
 
+const forge = window.forge;
+
 const publicKey = `
 -----BEGIN CERTIFICATE-----
 MIIDizCCAnOgAwIBAgIUeGrEqty1PI8ios79Qn6Sg22hMnwwDQYJKoZIhvcNAQEL
@@ -215,21 +217,6 @@ ZMUgDkR/tBHXbeavm1ByYsaJEHiTt38UBhDCPIEtStCDpO+3EJlKS+8fB1xlBu25
 2ro+ScyHp0kg7AITg7XfERUNF3cvmepnmlC1K6OYPIGS29kB+pdR1d+rn192945R
 vKqWy/wWnyhk/dHhddlNUKWf6myHftNXX9/hx1v0ZZr5wMAiHdyH571MAlAy9t4=
 -----END CERTIFICATE-----`;
-
-
-// Nạp certificate (public key)
-qz.security.setCertificatePromise((resolve, reject) => {
-    resolve(publicKey);
-});
-
-function signWithPrivateKey(privateKeyPem, data) {
-    const privateKey = forge.pki.privateKeyFromPem(privateKeyPem);
-    const md = forge.md.sha1.create();
-    // Nếu data là chuỗi hex (QZ Tray truyền vào), phải chuyển về bytes
-    md.update(forge.util.hexToBytes(data));
-    const signature = privateKey.sign(md);
-    return forge.util.encode64(signature);
-}
 
 const privateKeyPem = `
     -----BEGIN PRIVATE KEY-----
@@ -261,6 +248,20 @@ n1/KrfWzjP4706yKdep+VO8v0FjKKIWMfyVkSc39zfZXwAYDgZUZdld/8auzzLJz
 VZ+QVG+SGP96ihF33mJ2QUg=
 -----END PRIVATE KEY-----
 `;
+
+// Nạp certificate (public key)
+qz.security.setCertificatePromise((resolve, reject) => {
+    resolve(publicKey);
+});
+
+function signWithPrivateKey(privateKeyPem, data) {
+    const privateKey = forge.pki.privateKeyFromPem(privateKeyPem);
+    const md = forge.md.sha256.create(); // ✅ Đã sửa từ sha1 thành sha256
+    // Nếu data là chuỗi hex (QZ Tray truyền vào), phải chuyển về bytes
+    md.update(forge.util.hexToBytes(data));
+    const signature = privateKey.sign(md);
+    return forge.util.encode64(signature);
+}
 
 // Nạp hàm ký bằng private key
 qz.security.setSignaturePromise((toSign) => (resolve, reject) => {
