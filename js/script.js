@@ -444,14 +444,20 @@ function playQueueAudio(textArr, deskId) {
 // Máy desk lắng nghe callQueue và phát tiếng lần lượt
 function listenCallQueueAndPlay() {
     if (typeof db === 'undefined' || !db.ref) return;
-    db.ref('callQueue').on('child_added', function(snapshot) {
+    let playing = false;
+    db.ref('callQueue').on('child_added', function processQueue(snapshot) {
         const callData = snapshot.val();
-        if (!callData.played) {
+        if (!callData.played && !playing) {
+            playing = true;
             // Đánh dấu đã phát để tránh phát lại
             snapshot.ref.update({ played: true });
             // Phát tiếng gọi số
             const textArr = callData.counter.toString().split("");
-            playQueueAudio(textArr, callData.deskId);
+            playQueueAudio(textArr, callData.deskId).then(() => {
+                setTimeout(() => {
+                    playing = false;
+                }, 2000);
+            });
         }
     });
 }
