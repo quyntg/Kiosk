@@ -193,7 +193,7 @@ function showModalConfirm(name, id) {
     };
 }
 
-const publicKey = `
+/*const publicKey = `
 -----BEGIN CERTIFICATE-----
 MIIDizCCAnOgAwIBAgIUeGrEqty1PI8ios79Qn6Sg22hMnwwDQYJKoZIhvcNAQEL
 BQAwVTELMAkGA1UEBhMCQVUxEzARBgNVBAgMClNvbWUtU3RhdGUxITAfBgNVBAoM
@@ -270,7 +270,22 @@ qz.security.setSignaturePromise((toSign) => (resolve, reject) => {
     } catch (err) {
         reject(err);
     }
+});*/
+
+qz.security.setCertificatePromise(function(resolve, reject) {
+    // đường dẫn tới .pfx hoặc Base64 nội dung file
+    resolve("../data/mycert.pfx"); 
 });
+
+qz.security.setSignaturePromise(function(toSign) {
+    return function(resolve, reject) {
+        // ký bằng private key
+        qz.security.sign(toSign, "../data/mycert.pfx", "abc1234")
+            .then(resolve)
+            .catch(reject);
+    };
+});
+
 
 function connectQZ() {
   if (!qz.websocket.isActive()) {
