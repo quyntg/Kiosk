@@ -193,6 +193,45 @@ function showModalConfirm(name, id) {
     };
 }
 
+function signWithPrivateKey(privateKeyPem, data) {
+    const privateKey = forge.pki.privateKeyFromPem(privateKeyPem);
+    const md = forge.md.sha256.create();
+    md.update(data, "utf8");
+    const signature = privateKey.sign(md);
+    return forge.util.encode64(signature);
+}
+
+const privateKeyPem = `
+    -----BEGIN PRIVATE KEY-----
+    MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC0BQqWeiyCySlc
+    2x0nPmh515nBZZoWnSOuC5nvmDU7hWD67uhCDc+MZSFrGPDUQQYo7xPJrBfa9JU4
+    c60cMqypN+WtebzjXCsxfGSeQ1WKhTNXsC2Bv/Fg2iWx76xMRI0O6snMU8W9+7Eb
+    WAm7Uf/sQ7bN0AR1yPDKBMETE3ebcYO0Sd0aLb1X+UzlUKcq0ssBICSoIZ8++mCo
+    rzbVFmO2LObDHYw6SYMpH74hR7K60EvHsRhaxD69yMhPwTPpTMtnX+SoQ2jcPxOS
+    Kr6NHfJs6rJQy20vt6y4/9YI8SPM5HXhVQQcbodYzaQe5J0HH19kniWpSXkIRH+6
+    NMYxeUFfAgMBAAECggEAENZT34Unz/JkAFUCIgnamGLLn7oSsmtvdeI3O0tKLKSp
+    +xkIoiehMj7B5GlzGkxxTgzRFftsSRoNMY19iHX4447ggtwwXYzhAVeNdaaomTR3
+    e+EfhdOKY7D49kPgzUqwGCVqSxvJZ/Pi5G1/ONpPjIKSK30kSFFLVtR2VoQV8Mos
+    l41a9XbI0yS/b/E608BKxfDviNxHoQGoXf6CnHZGgambHpT8AF+Gt1XdGDscauX5
+    xpmU/Eu4Sf9XahCTqayof0gvwwdWO3R5t+NsZD12rQ95965hRsp33L2tZKcl2yPB
+    +LdJDexUhxW6Ytb0/Fl+xgnVA4knDJKSBDO7AJuPQQKBgQDn2k8rlGAw/+aP+J+l
+    V5I1HlTqHIJ6UcRZ92EqYNVTYIjW3y7U2N8NvMAFAu0A0GjpeVYhYRsPQC3cN7Bp
+    hMX0sfJ0W2goqMJffZVNTc6DYhe/ajSEBhkPAdbTcd3gqmDR42dh9ROL9nBw3uSt
+    kMbjEeNiivt9toPtK6fBPSuV/wKBgQDGxMBbAkjaA6wAe+aHziNe2FK/S0x8kEYh
+    qK3CtrvBDhEBgHIxdLsIJXndCCCPY+gytnVSP7KZip+G5YR5f8HmX2urOGpvYBp3
+    kB20+ZH+zN4ZQu3oPJPFmvmIXFUTO7pf8DuaR4oZ06xdgWbkJTSsu7oen0BUCatc
+    DN63HqgUoQKBgQDcRvx7AhBV3Xr3hBZhZ47gar3wYz/P6QmtFCw7sB5dhdTcmNSM
+    orNhANhKqpnz8Q4L7BzZv8GOvsITfNFdnyjYL4yT4hhWsOdjBBSqimbPSo4XbVcR
+    rB14tZ2d7IwKHLW6E9ywI8D7dBsmEY6gHHHpYKBximwf5xz2Y0iRfoV/jwKBgCiQ
+    uO0Z70JHI5BJuQeYQ1G09lZCCM8XJqjx4txtLK4+r6vNygBb4VvNQiyg3vxEmHvZ
+    DuKFS27YgqwmJT4im7DnYnLkJZyrUVt7VwS7Nld4+g7PwPv3ePUIJsr0hQxS0TuJ
+    LLDUztNshq3indwL18801MwxFhDQlF9J5R4cLJNhAoGBAKZPXS0Co7u55H/z99Xu
+    Hy8tTW2lz50QQxd1mnsZYkW8YZ/LAqDFC6YCmbLZpjhO7JT+b56CnEzWTAe11cBh
+    VVD4LNCgIFE0jXud5Dzk9ELXyQtkiIdU91vNalUe/eKPhK3Fw+qiZAmItWZl6sov
+    UbWrIEeZOz+PmXV7JRw+dc2O
+    -----END PRIVATE KEY-----  
+`;
+
 // Nạp certificate (public key)
 qz.security.setCertificatePromise((resolve, reject) => {
     resolve("-----BEGIN CERTIFICATE-----\n"
@@ -220,39 +259,12 @@ qz.security.setCertificatePromise((resolve, reject) => {
 
 // Nạp hàm ký bằng private key
 qz.security.setSignaturePromise((toSign) => (resolve, reject) => {
-    // Đây chỉ là ví dụ demo, trong thực tế bạn nên ký bằng server
-    const pk = `-----BEGIN PRIVATE KEY-----                                                                                             
-        MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC0BQqWeiyCySlc
-        2x0nPmh515nBZZoWnSOuC5nvmDU7hWD67uhCDc+MZSFrGPDUQQYo7xPJrBfa9JU4
-        c60cMqypN+WtebzjXCsxfGSeQ1WKhTNXsC2Bv/Fg2iWx76xMRI0O6snMU8W9+7Eb
-        WAm7Uf/sQ7bN0AR1yPDKBMETE3ebcYO0Sd0aLb1X+UzlUKcq0ssBICSoIZ8++mCo
-        rzbVFmO2LObDHYw6SYMpH74hR7K60EvHsRhaxD69yMhPwTPpTMtnX+SoQ2jcPxOS
-        Kr6NHfJs6rJQy20vt6y4/9YI8SPM5HXhVQQcbodYzaQe5J0HH19kniWpSXkIRH+6
-        NMYxeUFfAgMBAAECggEAENZT34Unz/JkAFUCIgnamGLLn7oSsmtvdeI3O0tKLKSp
-        +xkIoiehMj7B5GlzGkxxTgzRFftsSRoNMY19iHX4447ggtwwXYzhAVeNdaaomTR3
-        e+EfhdOKY7D49kPgzUqwGCVqSxvJZ/Pi5G1/ONpPjIKSK30kSFFLVtR2VoQV8Mos
-        l41a9XbI0yS/b/E608BKxfDviNxHoQGoXf6CnHZGgambHpT8AF+Gt1XdGDscauX5
-        xpmU/Eu4Sf9XahCTqayof0gvwwdWO3R5t+NsZD12rQ95965hRsp33L2tZKcl2yPB
-        +LdJDexUhxW6Ytb0/Fl+xgnVA4knDJKSBDO7AJuPQQKBgQDn2k8rlGAw/+aP+J+l
-        V5I1HlTqHIJ6UcRZ92EqYNVTYIjW3y7U2N8NvMAFAu0A0GjpeVYhYRsPQC3cN7Bp
-        hMX0sfJ0W2goqMJffZVNTc6DYhe/ajSEBhkPAdbTcd3gqmDR42dh9ROL9nBw3uSt
-        kMbjEeNiivt9toPtK6fBPSuV/wKBgQDGxMBbAkjaA6wAe+aHziNe2FK/S0x8kEYh
-        qK3CtrvBDhEBgHIxdLsIJXndCCCPY+gytnVSP7KZip+G5YR5f8HmX2urOGpvYBp3
-        kB20+ZH+zN4ZQu3oPJPFmvmIXFUTO7pf8DuaR4oZ06xdgWbkJTSsu7oen0BUCatc
-        DN63HqgUoQKBgQDcRvx7AhBV3Xr3hBZhZ47gar3wYz/P6QmtFCw7sB5dhdTcmNSM
-        orNhANhKqpnz8Q4L7BzZv8GOvsITfNFdnyjYL4yT4hhWsOdjBBSqimbPSo4XbVcR
-        rB14tZ2d7IwKHLW6E9ywI8D7dBsmEY6gHHHpYKBximwf5xz2Y0iRfoV/jwKBgCiQ
-        uO0Z70JHI5BJuQeYQ1G09lZCCM8XJqjx4txtLK4+r6vNygBb4VvNQiyg3vxEmHvZ
-        DuKFS27YgqwmJT4im7DnYnLkJZyrUVt7VwS7Nld4+g7PwPv3ePUIJsr0hQxS0TuJ
-        LLDUztNshq3indwL18801MwxFhDQlF9J5R4cLJNhAoGBAKZPXS0Co7u55H/z99Xu
-        Hy8tTW2lz50QQxd1mnsZYkW8YZ/LAqDFC6YCmbLZpjhO7JT+b56CnEzWTAe11cBh
-        VVD4LNCgIFE0jXud5Dzk9ELXyQtkiIdU91vNalUe/eKPhK3Fw+qiZAmItWZl6sov
-        UbWrIEeZOz+PmXV7JRw+dc2O                                                                                                
-        -----END PRIVATE KEY-----`;
-
-    // Sử dụng thư viện PKI.js, Forge hoặc crypto của Node để ký
-    // (ở frontend bạn có thể dùng forge.min.js để ký)
-    resolve(signWithPrivateKey(pk, toSign));
+    try {
+        const signature = signWithPrivateKey(privateKeyPem, toSign);
+        resolve(signature);
+    } catch (err) {
+        reject(err);
+    }
 });
 
 function connectQZ() {
