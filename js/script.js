@@ -235,8 +235,6 @@ function showResultModal(counter) {
             startConnection().then(() => {
                 return qz.printers.find("Tên máy in");
             }).then(printer => {
-                // Chọn máy in đầu tiên (hoặc tên máy in cụ thể)
-                const printer = printers[0];
                 // Nội dung in
                 const config = qz.configs.create(printer);
                 const data = [
