@@ -250,19 +250,15 @@ function showResultModal(counter) {
                 const cfg = qz.configs.create(printer);
                 // Lệnh ESC/POS
                 let text = [
-                    '\x1B\x61\x01', // Căn giữa
-                    '\x1D\x21\x01', // Font nhỏ (width x2, height x1)
-                    removeVietnameseTones('UY BAN NHAN DAN XA TAY DO') + '\n',
-                    removeVietnameseTones('THANH HOA') + '\n',
-                    '------------------------------------------\n',
-                    removeVietnameseTones('PHIEU SO THU TU') + '\n',
-                    '------------------------------------------\n\n',
-                    '\x1B\x61\x01', // Căn giữa
-                    '\x1D\x21\x33', // Font lớn nhất (width x4, height x4)
-                    counter + '\n', // In số thật to
+                    '\x1B\x61\x01' + removeVietnameseTones('UY BAN NHAN DAN XA TAY DO') + '\n',
+                    '\x1B\x61\x01' + removeVietnameseTones('THANH HOA') + '\n',
+                    '\x1B\x61\x01' + '------------------------------------------\n',
+                    '\x1B\x61\x01' + removeVietnameseTones('PHIEU SO THU TU') + '\n',
+                    '\x1B\x61\x01' + '------------------------------------------\n\n',
+                    '\x1B\x61\x01' + '\x1D\x21\x33' + counter + '\n', // Số thứ tự thật to, căn giữa
                     '\x1D\x21\x01', // Quay lại font nhỏ cho dòng dưới
-                    '\n',
-                    removeVietnameseTones('Vui long cho den luot') + '\n',
+                    '\x1B\x61\x01' + '\n',
+                    '\x1B\x61\x01' + removeVietnameseTones('Vui long cho den luot') + '\n',
                     '\n\n\n\n\n', // Đoạn trắng vừa đủ
                     '\x1D\x21\x00', // Trở lại font thường
                     '\x1D\x56\x41', // Cắt giấy sau khi in phiếu
