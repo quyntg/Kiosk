@@ -315,7 +315,7 @@ async function printReceipt(text) {
     const printerId = 74718076; // thay bằng ID của máy in (lấy từ PrintNode Dashboard)
 
     // ESC/POS command cho hóa đơn
-    let escposCommands = text;
+    let escposCommands = text.join("");
 
     // Encode Base64 để gửi qua PrintNode
     const contentBase64 = btoa(unescape(encodeURIComponent(escposCommands)));
