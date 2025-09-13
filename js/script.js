@@ -193,15 +193,18 @@ function showModalConfirm(name, id) {
     };
 }
 
-function startConnection() {
-    if (!qz.websocket.isActive()) {
-        return qz.websocket.connect()
-            .then(() => console.log("✅ Đã kết nối QZ Tray"))
-            .catch(err => console.error("❌ Lỗi kết nối:", err));
-    } else {
-        console.log("⚡ QZ Tray đã kết nối, không cần connect lại");
-        return Promise.resolve();
-    }
+qz.security.setCertificatePromise(function(resolve, reject) { resolve(); });
+qz.security.setSignaturePromise(function(toSign) {
+  return function(resolve, reject) { resolve(); };
+});
+
+function connectQZ() {
+  if (!qz.websocket.isActive()) {
+    return qz.websocket.connect()
+      .then(() => console.log("✅ Đã kết nối QZ Tray"))
+      .catch(err => console.error("❌ Lỗi kết nối QZ:", err));
+  }
+  return Promise.resolve();
 }
 
 // Hiện modal kết quả lấy số
@@ -232,12 +235,11 @@ function showResultModal(counter) {
         btnPrint.style.display = '';
         btnPrint.onclick = function() {
            // Kết nối QZ Tray
-            startConnection().then(() => {
-                return qz.printers.find("Tên máy in");
+           connectQZ().then(() => {
+                return qz.printers.getDefault(); // lấy máy in mặc định
             }).then(printer => {
-                // Nội dung in
-                const config = qz.configs.create(printer);
-                const data = [
+                const cfg = qz.configs.create(printer);
+                let text = [
                     '\x1B\x40', // Reset máy in ESC/POS
                     '      UỶ BAN NHÂN DÂN XÃ TÂY ĐÔ\n',
                     '        THANH HOÁ\n',
@@ -248,13 +250,13 @@ function showResultModal(counter) {
                     '   Vui lòng chờ đến lượt\n\n\n\n',
                     '\x1D\x56\x41' // Cắt giấy (ESC/POS)
                 ];
-                // Gửi lệnh in
-                return qz.print(config, data);
+                const data = [
+                    { type: 'raw', format: 'plain', data: text.join('') }
+                ];
+                return qz.print(cfg, data);
             }).then(() => {
-                alert('In thành công!');
-            }).catch(err => {
-                alert('Lỗi in: ' + err);
-            });
+                console.log("✅ In thành công");
+            }).catch(err => console.error("❌ Lỗi in:", err));
         };
     } else {
         msg.innerHTML = `<span style='color: red;'>Lấy số thất bại. Vui lòng thử lại!</span>`;
