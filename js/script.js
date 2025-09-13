@@ -239,21 +239,34 @@ function showResultModal(counter) {
         msg.innerHTML = `Bạn đã lấy số thành công!<br><span style='font-size: 2rem; color: #000; font-weight: 700;'>${counter}</span>`;
         btnPrint.style.display = '';
         btnPrint.onclick = function() {
-           // Kết nối QZ Tray
-           connectQZ().then(() => {
+            // Hàm bỏ dấu tiếng Việt
+            function removeVietnameseTones(str) {
+                return str.normalize('NFD').replace(/\p{Diacritic}/gu, '').replace(/đ/g, 'd').replace(/Đ/g, 'D');
+            }
+            // Kết nối QZ Tray
+            connectQZ().then(() => {
                 return qz.printers.getDefault(); // lấy máy in mặc định
             }).then(printer => {
                 const cfg = qz.configs.create(printer);
+                // Lệnh ESC/POS
                 let text = [
-                    '\x1B\x40', // Reset máy in ESC/POS
-                    '      UỶ BAN NHÂN DÂN XÃ TÂY ĐÔ\n',
-                    '        THANH HOÁ\n',
-                    '------------------------------\n',
-                    '         PHIẾU SỐ THỨ TỰ\n',
-                    '------------------------------\n\n',
-                    '         SỐ: ' + counter + '\n\n',
-                    '   Vui lòng chờ đến lượt\n\n\n\n',
-                    '\x1D\x56\x41' // Cắt giấy (ESC/POS)
+                    '\x1B\x40', // Reset
+                    '\x1B\x61\x01', // Căn giữa
+                    removeVietnameseTones('UY BAN NHAN DAN XA TAY DO') + '\n',
+                    removeVietnameseTones('THANH HOA') + '\n',
+                    '------------------------------------------\n',
+                    '\x1B\x61\x01', // Căn giữa
+                    removeVietnameseTones('PHIEU SO THU TU') + '\n',
+                    '------------------------------------------\n\n',
+                    '\x1B\x61\x01', // Căn giữa
+                    '\x1D\x21\x11', // Font double width & height
+                    'S O : ' + counter + '\n',
+                    '\x1D\x21\x00', // Trở lại font thường
+                    '\n',
+                    '\x1B\x61\x01', // Căn giữa
+                    removeVietnameseTones('Vui long cho den luot') + '\n',
+                    '\n\n\n',
+                    '\x1D\x56\x41' // Cắt giấy
                 ];
                 const data = [
                     { type: 'raw', format: 'plain', data: text.join('') }
