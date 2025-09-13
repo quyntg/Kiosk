@@ -6,6 +6,8 @@
     <title>Trang chủ</title>
     <!-- Page.js router -->
     <script src="https://unpkg.com/page/page.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <link rel="stylesheet" href="../css/style.css">
     <script src="../data/data.js"></script>
     <script src="../js/script.js"></script>
@@ -54,20 +56,45 @@
             setTimeout(() => {           
                 document.body.removeAttribute('data-page');
                 loadProcedureList();
+                let isFirstGateLoad = true;
+                firebase.database().ref('/data').on('value', function(snapshot) {
+                    const data = snapshot.val();
+                    console.log('Data mới nhất:', data);
+                    let text = '';
+                    function splitDigitsAsString(num) {
+                        return num.toString().split(""); 
+                    }
+                    text = splitDigitsAsString(data.counter);
+                    console.log('Text sau khi tách:', text);
+                    if (isFirstGateLoad) {
+                        isFirstGateLoad = false;
+                        return; // Bỏ qua playQueueAudio lần đầu
+                    }
+                    playQueueAudio(text, data.deskId);
+                });
             }, 1000);
         });
 
         page('/desk', () => {
             loadPage('html/desk.html', 'app');
             setTimeout(() => {           
-                document.body.removeAttribute('data-page');                
-                startDeskAutoReload();
-                loadDeskQueue();
+                document.body.removeAttribute('data-page');
+                let isFirstDeskLoad = true;
+                showDeskSpinner();
+                loadDeskQueue(0);
                 let deskId = sessionStorage.getItem('deskId') || 'desk1';
                 document.getElementById('btnComplete').onclick = function() {
                     if (current) showModal('Hoàn thành', current, completeTicket);
                 };
-
+                firebase.database().ref('/counter').on('value', function(snapshot) {
+                    const counter = snapshot.val();
+                    console.log('Counter mới nhất:', counter);
+                    if (isFirstDeskLoad) {
+                        isFirstDeskLoad = false;
+                        return; // Bỏ qua playQueueAudio lần đầu
+                    }   
+                    loadDeskQueue(1);
+                });
                 renderCurrent();
             }, 100);
         });

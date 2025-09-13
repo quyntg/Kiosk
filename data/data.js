@@ -1,4 +1,5 @@
 // Đường dẫn file mp3 phát trước và sau khi phát voice (có thể thay đổi tuỳ ý)
+var mp3AlertUrl = './data/chuong.mp3';
 var mp3BeforeUrl = './data/xin moi.mp3';
 var mp3AfterUrl = './data/den quay so.mp3';
 var mp3EndUrl = './data/phuc vu.mp3';
@@ -13,6 +14,17 @@ var mp37 = './data/7.mp3'; // file mp3 đọc số 7
 var mp38 = './data/8.mp3'; // file mp3 đọc số 8
 var mp39 = './data/9.mp3'; // file mp3 đọc số 9
 var ggAPIUrl = 'https://script.google.com/macros/s/AKfycbxbqzFia4P-R5VNbt4aSMgFuNuxX-paztgm0ZzzAH88fTWiAWbL6KdpVusx7xAn3dPN/exec';
+
+const firebaseConfig = {
+    apiKey: "AIzaSyCn3ogJAeH_H0yZT0X9SJWQc9Fysf2WVvk",
+    authDomain: "kiosk-taydo.firebaseapp.com",
+    databaseURL: "https://kiosk-taydo-default-rtdb.firebaseio.com",
+    projectId: "kiosk-taydo",
+    storageBucket: "kiosk-taydo.firebasestorage.app",
+    messagingSenderId: "125166394572",
+    appId: "1:125166394572:web:59013ba16e3f9e8bb1f669",
+    measurementId: "G-5TKPQNGTV6"
+};
 
 var deskList = [
     { name: "Lĩnh vực nông nghiệp - tài nguyên", id: "desk1" },

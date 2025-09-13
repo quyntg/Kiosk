@@ -3,34 +3,8 @@ let queue = [
     { number: 'A002', name: 'Trần Thị B' }
 ];
 let current = null;
-
-// --- Desk auto refresh queue logic ---
-let deskAutoReloadTimer = null;
-let deskAutoReloadActive = false;
-function startDeskAutoReload() {
-    if (deskAutoReloadActive) return;
-    deskAutoReloadActive = true;
-    function reload() {
-        if (!deskAutoReloadActive) return;
-        // Kiểm tra nếu có số đang xử lý thì không load lại
-        if (current) {
-            console.log('[DeskAutoReload] Đang có số đang xử lý, tạm dừng loadDeskQueue');
-            deskAutoReloadTimer = setTimeout(reload, 2 * 60 * 1000);
-            return;
-        }
-        console.log('[DeskAutoReload] loadDeskQueue');
-        loadDeskQueue();
-        deskAutoReloadTimer = setTimeout(reload, 2 * 60 * 1000);
-    }
-    reload();
-}
-
-function stopDeskAutoReload() {
-    deskAutoReloadActive = false;
-    if (deskAutoReloadTimer) clearTimeout(deskAutoReloadTimer);
-    deskAutoReloadTimer = null;
-    console.log('[DeskAutoReload] Đã dừng auto reload');
-}
+const app = firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
 
 function loadPage(url, id) {
 	const app = document.getElementById(id);
@@ -241,6 +215,7 @@ function showResultModal(counter) {
     const btnPrint = modal.querySelector('#btnPrint');
     const btnClose = modal.querySelector('#btnCloseResult');
     if (counter) {
+        db.ref("counter").set(counter);
         msg.innerHTML = `Bạn đã lấy số thành công!<br><span style='font-size: 2rem; color: #000; font-weight: 700;'>${counter}</span>`;
         btnPrint.style.display = '';
         btnPrint.onclick = function() {
@@ -315,19 +290,26 @@ function hideDeskSpinner() {
 }
 
 // Load queue từ backend và render
-function loadDeskQueue() {
-    showDeskSpinner();
+function loadDeskQueue(type) {
     const deskId = sessionStorage.getItem('deskId');
     if (!deskId) {
         hideDeskSpinner();
         return;
     }
+    // Lưu queue cũ để so sánh
+    const oldQueue = Array.isArray(queue) ? queue.map(item => item.number) : [];
     getScheduleById(deskId).then(data => {
-        // data.queue dạng "1000,1001,1002" => mảng queue
+        let newQueueArr = [];
         if (data && data.success && typeof data.queue === 'string') {
-            queue = data.queue.split(',').filter(x => x).map(num => ({ number: num, name: '' }));
+            newQueueArr = data.queue.split(',').filter(x => x);
+            queue = newQueueArr.map(num => ({ number: num, name: '' }));
         } else {
             queue = [];
+        }
+        // So sánh queue cũ và mới, nếu có số mới thì thông báo
+        const added = newQueueArr.filter(num => !oldQueue.includes(num));
+        if (added.length > 0 && type == 1) {
+            showNewTicketNotification(added);
         }
         renderQueue();
         hideDeskSpinner();
@@ -337,6 +319,41 @@ function loadDeskQueue() {
         hideDeskSpinner();
     });
 }
+
+// Hiện thông báo khi có số mới vào queue ở quầy
+function showNewTicketNotification(numbers) {
+    if (!Array.isArray(numbers) || numbers.length === 0) return;
+    let msg = 'Có số mới: ' + numbers.join(', ');
+    let notif = document.getElementById('newTicketNotif');
+    if (!notif) {
+        notif = document.createElement('div');
+        notif.id = 'newTicketNotif';
+        notif.style.position = 'fixed';
+        notif.style.top = '30px';
+        notif.style.right = '30px';
+        notif.style.background = 'rgba(77, 206, 94, 0.95)';
+        notif.style.color = '#fff';
+        notif.style.padding = '16px 28px';
+        notif.style.borderRadius = '8px';
+        notif.style.fontSize = '1.3rem';
+        notif.style.boxShadow = '0 2px 8px rgba(0,0,0,0.15)';
+        notif.style.zIndex = 9999;
+        document.body.appendChild(notif);
+    }
+    notif.textContent = msg;
+    notif.style.display = 'block';
+    // Phát tiếng chuông ting nếu có file mp3AlertUrl
+    if (typeof mp3AlertUrl !== 'undefined' && mp3AlertUrl) {
+        try {
+            const audio = new Audio(mp3AlertUrl);
+            audio.play();
+        } catch (e) {}
+    }
+    setTimeout(() => {
+        notif.style.display = 'none';
+    }, 3500);
+}
+
 // Lấy toàn bộ dữ liệu schedule theo id từ backend
 function getScheduleById(id) {
     return fetch(ggAPIUrl + '?action=getScheduleById&id=' + encodeURIComponent(id))
@@ -429,8 +446,8 @@ function renderQueue() {
                         if (data && data.success && data.text) {
                             const modal = document.getElementById('modalConfirm');
                             modal.style.display = 'none';
-                            callTicket(idx, false);
-                            playQueueAudio(data.text, deskId.replace('desk', ''));                    
+                            db.ref("data").set({ counter: data.text , deskId: deskId.replace('desk', '') });
+                            callTicket(idx, false);                 
                         }
                     }); 
             });
@@ -488,7 +505,7 @@ function renderCurrent() {
                         .then(() => {
                             current = null;
                             renderCurrent();
-                            loadDeskQueue();
+                            loadDeskQueue(1);
                             const modal = document.getElementById('modalConfirm');
                             modal.style.display = 'none';
                         });
@@ -505,7 +522,7 @@ function renderCurrent() {
                         .then(() => {
                             current = null;
                             renderCurrent();
-                            loadDeskQueue();
+                            loadDeskQueue(1);
                             const modal = document.getElementById('modalConfirm');
                             modal.style.display = 'none';
                         });

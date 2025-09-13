@@ -112,12 +112,8 @@ function callCounterById(id, counter) {
       break;
     }
   }
-  let text = '';
-  function splitDigitsAsString(num) {
-      return num.toString().split(""); 
-  }
   if (updated) {
-    text = splitDigitsAsString(`${counter}`);
+    text = `${counter}`;
   }
   return JSON.stringify({ success: updated, text: text });
 }
