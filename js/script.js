@@ -227,7 +227,7 @@ function signWithPrivateKey(privateKeyPem, data) {
 }
 
 const privateKeyPem = `
-    -----BEGIN PRIVATE KEY-----
+    -----BEGIN RSA PRIVATE KEY-----
     MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC0BQqWeiyCySlc
     2x0nPmh515nBZZoWnSOuC5nvmDU7hWD67uhCDc+MZSFrGPDUQQYo7xPJrBfa9JU4
     c60cMqypN+WtebzjXCsxfGSeQ1WKhTNXsC2Bv/Fg2iWx76xMRI0O6snMU8W9+7Eb
@@ -254,7 +254,7 @@ const privateKeyPem = `
     Hy8tTW2lz50QQxd1mnsZYkW8YZ/LAqDFC6YCmbLZpjhO7JT+b56CnEzWTAe11cBh
     VVD4LNCgIFE0jXud5Dzk9ELXyQtkiIdU91vNalUe/eKPhK3Fw+qiZAmItWZl6sov
     UbWrIEeZOz+PmXV7JRw+dc2O
-    -----END PRIVATE KEY-----
+    -----END RSA PRIVATE KEY-----
 `;
 
 // Nạp hàm ký bằng private key
