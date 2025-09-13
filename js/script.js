@@ -250,6 +250,7 @@ function showResultModal(counter) {
                 const cfg = qz.configs.create(printer);
                 // Lệnh ESC/POS
                 let text = [
+                    '\x1D\x56\x41', // Cắt giấy
                     // Bỏ lệnh reset ESC @ để tránh bị in ký tự @
                     '\x1B\x61\x01', // Căn giữa
                     '\x1D\x21\x01', // Font nhỏ (width x2, height x1)
