@@ -192,6 +192,18 @@ function showModalConfirm(name, id) {
         modal.style.display = 'none';
     };
 }
+
+function startConnection() {
+    if (!qz.websocket.isActive()) {
+        return qz.websocket.connect()
+            .then(() => console.log("✅ Đã kết nối QZ Tray"))
+            .catch(err => console.error("❌ Lỗi kết nối:", err));
+    } else {
+        console.log("⚡ QZ Tray đã kết nối, không cần connect lại");
+        return Promise.resolve();
+    }
+}
+
 // Hiện modal kết quả lấy số
 function showResultModal(counter) {
     // Tạo modal nếu chưa có
@@ -220,10 +232,9 @@ function showResultModal(counter) {
         btnPrint.style.display = '';
         btnPrint.onclick = function() {
            // Kết nối QZ Tray
-            qz.websocket.connect().then(() => {
-                // Lấy danh sách máy in
-                return qz.printers.find();
-            }).then(printers => {
+            startConnection().then(() => {
+                return qz.printers.find("Tên máy in");
+            }).then(printer => {
                 // Chọn máy in đầu tiên (hoặc tên máy in cụ thể)
                 const printer = printers[0];
                 // Nội dung in
