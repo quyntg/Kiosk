@@ -193,85 +193,85 @@ function showModalConfirm(name, id) {
     };
 }
 
-// const forge = window.forge;
+const forge = window.forge;
 
-// const publicKey = `
-// -----BEGIN CERTIFICATE-----
-// MIIDizCCAnOgAwIBAgIUeGrEqty1PI8ios79Qn6Sg22hMnwwDQYJKoZIhvcNAQEL
-// BQAwVTELMAkGA1UEBhMCQVUxEzARBgNVBAgMClNvbWUtU3RhdGUxITAfBgNVBAoM
-// GEludGVybmV0IFdpZGdpdHMgUHR5IEx0ZDEOMAwGA1UEAwwFS2lvc2swHhcNMjUw
-// OTEzMTMyODU1WhcNMzUwOTExMTMyODU1WjBVMQswCQYDVQQGEwJBVTETMBEGA1UE
-// CAwKU29tZS1TdGF0ZTEhMB8GA1UECgwYSW50ZXJuZXQgV2lkZ2l0cyBQdHkgTHRk
-// MQ4wDAYDVQQDDAVLaW9zazCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEB
-// AItkzEHT1uau6iQYYVw92EWj/XXhr3TU6Q2ykfN6U30b1pmaHwpvIzc+kmGyPDGB
-// wTroIe61z/z111SqVup6l86EI9xPGCVh1UXa/8wxgCy9AOUbCD7kBtshV6gAHc10
-// 5tBR0PbZ5bxf2NVs4Bi4VXQ5GgaNjmMtIGp+mFj70XP/ewkVzht6PB+Mp9RZyOSf
-// HZxw2/tL9XIavHXChKmEJKry5HkrDRjxY1jR9K26FCRr4F1babQX+wW6WYyE0JvD
-// mOAAXJFSdR2VJKmvVAEhnplBqUhroPSGUTT3rVEBRm2HR4Tc7sYWW+RqSLjABSWc
-// GUIeubYndFmUi1nKtNuUQjcCAwEAAaNTMFEwHQYDVR0OBBYEFBJ7ijD7HDKSbnQE
-// iq924YukTcBKMB8GA1UdIwQYMBaAFBJ7ijD7HDKSbnQEiq924YukTcBKMA8GA1Ud
-// EwEB/wQFMAMBAf8wDQYJKoZIhvcNAQELBQADggEBABgK6eqJjysCFxOynaTEymK0
-// 8L9Z3283JvwmryP5PJVqlz2oy2JdM2ELE2SDIzaka9Or2vTob+SG9OSBVzLX+coK
-// j6O4SYoF/Z50+dU5J/ot84Rb0A2UerXP8+bEr3a+Bmh3lYfBXtgg8KdP1OkJydWh
-// ZMUgDkR/tBHXbeavm1ByYsaJEHiTt38UBhDCPIEtStCDpO+3EJlKS+8fB1xlBu25
-// 2ro+ScyHp0kg7AITg7XfERUNF3cvmepnmlC1K6OYPIGS29kB+pdR1d+rn192945R
-// vKqWy/wWnyhk/dHhddlNUKWf6myHftNXX9/hx1v0ZZr5wMAiHdyH571MAlAy9t4=
-// -----END CERTIFICATE-----`;
+const publicKey = `
+-----BEGIN CERTIFICATE-----
+MIIDizCCAnOgAwIBAgIUeGrEqty1PI8ios79Qn6Sg22hMnwwDQYJKoZIhvcNAQEL
+BQAwVTELMAkGA1UEBhMCQVUxEzARBgNVBAgMClNvbWUtU3RhdGUxITAfBgNVBAoM
+GEludGVybmV0IFdpZGdpdHMgUHR5IEx0ZDEOMAwGA1UEAwwFS2lvc2swHhcNMjUw
+OTEzMTMyODU1WhcNMzUwOTExMTMyODU1WjBVMQswCQYDVQQGEwJBVTETMBEGA1UE
+CAwKU29tZS1TdGF0ZTEhMB8GA1UECgwYSW50ZXJuZXQgV2lkZ2l0cyBQdHkgTHRk
+MQ4wDAYDVQQDDAVLaW9zazCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEB
+AItkzEHT1uau6iQYYVw92EWj/XXhr3TU6Q2ykfN6U30b1pmaHwpvIzc+kmGyPDGB
+wTroIe61z/z111SqVup6l86EI9xPGCVh1UXa/8wxgCy9AOUbCD7kBtshV6gAHc10
+5tBR0PbZ5bxf2NVs4Bi4VXQ5GgaNjmMtIGp+mFj70XP/ewkVzht6PB+Mp9RZyOSf
+HZxw2/tL9XIavHXChKmEJKry5HkrDRjxY1jR9K26FCRr4F1babQX+wW6WYyE0JvD
+mOAAXJFSdR2VJKmvVAEhnplBqUhroPSGUTT3rVEBRm2HR4Tc7sYWW+RqSLjABSWc
+GUIeubYndFmUi1nKtNuUQjcCAwEAAaNTMFEwHQYDVR0OBBYEFBJ7ijD7HDKSbnQE
+iq924YukTcBKMB8GA1UdIwQYMBaAFBJ7ijD7HDKSbnQEiq924YukTcBKMA8GA1Ud
+EwEB/wQFMAMBAf8wDQYJKoZIhvcNAQELBQADggEBABgK6eqJjysCFxOynaTEymK0
+8L9Z3283JvwmryP5PJVqlz2oy2JdM2ELE2SDIzaka9Or2vTob+SG9OSBVzLX+coK
+j6O4SYoF/Z50+dU5J/ot84Rb0A2UerXP8+bEr3a+Bmh3lYfBXtgg8KdP1OkJydWh
+ZMUgDkR/tBHXbeavm1ByYsaJEHiTt38UBhDCPIEtStCDpO+3EJlKS+8fB1xlBu25
+2ro+ScyHp0kg7AITg7XfERUNF3cvmepnmlC1K6OYPIGS29kB+pdR1d+rn192945R
+vKqWy/wWnyhk/dHhddlNUKWf6myHftNXX9/hx1v0ZZr5wMAiHdyH571MAlAy9t4=
+-----END CERTIFICATE-----`;
 
-// const privateKeyPem = `
-//     -----BEGIN PRIVATE KEY-----
-// MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCLZMxB09bmruok
-// GGFcPdhFo/114a901OkNspHzelN9G9aZmh8KbyM3PpJhsjwxgcE66CHutc/89ddU
-// qlbqepfOhCPcTxglYdVF2v/MMYAsvQDlGwg+5AbbIVeoAB3NdObQUdD22eW8X9jV
-// bOAYuFV0ORoGjY5jLSBqfphY+9Fz/3sJFc4bejwfjKfUWcjknx2ccNv7S/VyGrx1
-// woSphCSq8uR5Kw0Y8WNY0fStuhQka+BdW2m0F/sFulmMhNCbw5jgAFyRUnUdlSSp
-// r1QBIZ6ZQalIa6D0hlE0961RAUZth0eE3O7GFlvkaki4wAUlnBlCHrm2J3RZlItZ
-// yrTblEI3AgMBAAECggEAJnxtks0429c2aUHb+7pNkKi+7cGijmjMcc44UteW3oeF
-// oEI3yMs3l2SsyNGLogWXwrpdyAklxEtiKQug1LuFV20Pc5/Y5FVXK6LUFl4ia/fB
-// HABzLd4KcI0LpSRnFhdtNN4qCkXOEs0J0p9tXhXi7iRn5aBGzGYkuZJ7YLIiOdrL
-// HDdd5Lx0XsuZPbjofsLMfl5sKyMP2rZxrGaC+70zMGoWIUelgfk/ACU+5YdNsVSR
-// 4vi3nY1g5WZ55CyfyX/NPPvfeMKYUmNmb9N4v0Arg9zRwBuGL0yxbWkZjb4jaY2F
-// X1zo8ZysFGBKrsz1jLTegAUcIVLpI5HvtSTNmqMfNQKBgQC/nvo01hgyn5rQu5vx
-// 6JevDKh9gWJGXPb1KY5IlImCKUm3BovS/l0NtI0vyOWaWMiL4FRzSeKCgr3U/s2d
-// ONiEFoEfvRw5VnEn0QN/JgIAXmUitM1QXItPTcAlveqRMixsUItY4njkfbCaauDv
-// kyNKIww5z7evQtYKLgFyNjySVQKBgQC6OdXZCMvpaKEavZHxVSgsd5dEoIiQwngW
-// dScUKPQOmF1JjfV/QA3CeB3RuOBmO+mSTqfk6skVhYjq+bpXlQk/ktIaTltxAoCR
-// NnHxsYItDY/iecQoDFPuXtgv5Rg0lsXWRoQafYzY0PbMliiJEtn9BqTvkFFGRiVS
-// IpNhpuVGWwKBgQCRvWNFjlQnJJcGDLrF2YaMX89CbYaGR6yYuDt8XmTbd3WWW8c6
-// +bVieCEt59khdEdLg5oXeWlqo++nsQhHfPXIOKmKrzVpMqKrit/i89Bv4VuAcwz5
-// Avn9nf/3dKOUPRnmY7goKU+TUTlhqMpdzIX5nABvc9mb1fSfF3CIIlIdZQKBgAZh
-// 0QhdGs/m/A50jLnelz/e4VpCvitn3sG2Rh6UwLh3VEsfCFjSEyalAzCay2X1i62t
-// 8GcR/M42A1k6Mb6qpuR83aJ1KQEYett/KCyGTtXIbzPtxGEy+vViXrpVeZzjxefw
-// Brr5rogHsU2Vn9ICyWG4hpKHOaHU6ZaFBNQF6jmdAoGAcSnpborvadIz6XBoIuPD
-// t0lcVwDt6x/BoappIkIZC91XDPI567Hlv42ZWAmTuoiRqniaqkQVO99uFqfGxyqT
-// n1/KrfWzjP4706yKdep+VO8v0FjKKIWMfyVkSc39zfZXwAYDgZUZdld/8auzzLJz
-// VZ+QVG+SGP96ihF33mJ2QUg=
-// -----END PRIVATE KEY-----
-// `;
+const privateKeyPem = `
+    -----BEGIN PRIVATE KEY-----
+MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCLZMxB09bmruok
+GGFcPdhFo/114a901OkNspHzelN9G9aZmh8KbyM3PpJhsjwxgcE66CHutc/89ddU
+qlbqepfOhCPcTxglYdVF2v/MMYAsvQDlGwg+5AbbIVeoAB3NdObQUdD22eW8X9jV
+bOAYuFV0ORoGjY5jLSBqfphY+9Fz/3sJFc4bejwfjKfUWcjknx2ccNv7S/VyGrx1
+woSphCSq8uR5Kw0Y8WNY0fStuhQka+BdW2m0F/sFulmMhNCbw5jgAFyRUnUdlSSp
+r1QBIZ6ZQalIa6D0hlE0961RAUZth0eE3O7GFlvkaki4wAUlnBlCHrm2J3RZlItZ
+yrTblEI3AgMBAAECggEAJnxtks0429c2aUHb+7pNkKi+7cGijmjMcc44UteW3oeF
+oEI3yMs3l2SsyNGLogWXwrpdyAklxEtiKQug1LuFV20Pc5/Y5FVXK6LUFl4ia/fB
+HABzLd4KcI0LpSRnFhdtNN4qCkXOEs0J0p9tXhXi7iRn5aBGzGYkuZJ7YLIiOdrL
+HDdd5Lx0XsuZPbjofsLMfl5sKyMP2rZxrGaC+70zMGoWIUelgfk/ACU+5YdNsVSR
+4vi3nY1g5WZ55CyfyX/NPPvfeMKYUmNmb9N4v0Arg9zRwBuGL0yxbWkZjb4jaY2F
+X1zo8ZysFGBKrsz1jLTegAUcIVLpI5HvtSTNmqMfNQKBgQC/nvo01hgyn5rQu5vx
+6JevDKh9gWJGXPb1KY5IlImCKUm3BovS/l0NtI0vyOWaWMiL4FRzSeKCgr3U/s2d
+ONiEFoEfvRw5VnEn0QN/JgIAXmUitM1QXItPTcAlveqRMixsUItY4njkfbCaauDv
+kyNKIww5z7evQtYKLgFyNjySVQKBgQC6OdXZCMvpaKEavZHxVSgsd5dEoIiQwngW
+dScUKPQOmF1JjfV/QA3CeB3RuOBmO+mSTqfk6skVhYjq+bpXlQk/ktIaTltxAoCR
+NnHxsYItDY/iecQoDFPuXtgv5Rg0lsXWRoQafYzY0PbMliiJEtn9BqTvkFFGRiVS
+IpNhpuVGWwKBgQCRvWNFjlQnJJcGDLrF2YaMX89CbYaGR6yYuDt8XmTbd3WWW8c6
++bVieCEt59khdEdLg5oXeWlqo++nsQhHfPXIOKmKrzVpMqKrit/i89Bv4VuAcwz5
+Avn9nf/3dKOUPRnmY7goKU+TUTlhqMpdzIX5nABvc9mb1fSfF3CIIlIdZQKBgAZh
+0QhdGs/m/A50jLnelz/e4VpCvitn3sG2Rh6UwLh3VEsfCFjSEyalAzCay2X1i62t
+8GcR/M42A1k6Mb6qpuR83aJ1KQEYett/KCyGTtXIbzPtxGEy+vViXrpVeZzjxefw
+Brr5rogHsU2Vn9ICyWG4hpKHOaHU6ZaFBNQF6jmdAoGAcSnpborvadIz6XBoIuPD
+t0lcVwDt6x/BoappIkIZC91XDPI567Hlv42ZWAmTuoiRqniaqkQVO99uFqfGxyqT
+n1/KrfWzjP4706yKdep+VO8v0FjKKIWMfyVkSc39zfZXwAYDgZUZdld/8auzzLJz
+VZ+QVG+SGP96ihF33mJ2QUg=
+-----END PRIVATE KEY-----
+`;
 
-// // Nạp certificate (public key)
-// qz.security.setCertificatePromise((resolve, reject) => {
-//     resolve(publicKey);
-// });
+// Nạp certificate (public key)
+qz.security.setCertificatePromise((resolve, reject) => {
+    resolve(publicKey);
+});
 
-// function signWithPrivateKey(privateKeyPem, data) {
-//     const privateKey = forge.pki.privateKeyFromPem(privateKeyPem);
-//     const md = forge.md.sha256.create(); // ✅ Đã sửa từ sha1 thành sha256
-//     // Nếu data là chuỗi hex (QZ Tray truyền vào), phải chuyển về bytes
-//     md.update(forge.util.hexToBytes(data));
-//     const signature = privateKey.sign(md);
-//     return forge.util.encode64(signature);
-// }
+function signWithPrivateKey(privateKeyPem, data) {
+    const privateKey = forge.pki.privateKeyFromPem(privateKeyPem);
+    const md = forge.md.sha256.create(); // ✅ Đã sửa từ sha1 thành sha256
+    // Nếu data là chuỗi hex (QZ Tray truyền vào), phải chuyển về bytes
+    md.update(forge.util.hexToBytes(data));
+    const signature = privateKey.sign(md);
+    return forge.util.encode64(signature);
+}
 
-// // Nạp hàm ký bằng private key
-// qz.security.setSignaturePromise((toSign) => (resolve, reject) => {
-//     try {
-//         const signature = signWithPrivateKey(privateKeyPem, toSign);
-//         resolve(signature);
-//     } catch (err) {
-//         reject(err);
-//     }
-// });
+// Nạp hàm ký bằng private key
+qz.security.setSignaturePromise((toSign) => (resolve, reject) => {
+    try {
+        const signature = signWithPrivateKey(privateKeyPem, toSign);
+        resolve(signature);
+    } catch (err) {
+        reject(err);
+    }
+});
 
 function connectQZ() {
   if (!qz.websocket.isActive()) {
@@ -281,30 +281,6 @@ function connectQZ() {
   }
   return Promise.resolve();
 }
-
-qz.websocket.connect()
-  .then(() => console.log("✅ Connected to QZ Tray"))
-  .catch(err => console.error("❌ Connection failed:", err));
-
-qz.security.setCertificatePromise((resolve, reject) => {
-    fetch("../data/public.crt")   // load public cert (không phải .pfx)
-        .then(res => res.text())
-        .then(resolve)
-        .catch(reject);
-});
-
-qz.security.setSignaturePromise((toSign) => {
-    return (resolve, reject) => {
-        fetch(ggAPIUrl, {
-            method: "POST",
-            body: JSON.stringify({ request: toSign }),
-            headers: { "Content-Type": "application/json" }
-        })
-        .then(res => res.text())
-        .then(resolve)
-        .catch(reject);
-    };
-});
 
 // Hiện modal kết quả lấy số
 function showResultModal(counter) {
