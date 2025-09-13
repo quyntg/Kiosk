@@ -194,32 +194,28 @@ function showModalConfirm(name, id) {
 }
 
 // Nạp certificate (public key)
-// qz.security.setCertificatePromise((resolve, reject) => {
-//     resolve("-----BEGIN CERTIFICATE-----\n"
-//     + "MIIDizCCAnOgAwIBAgIUcxNg1bGVpqmAawQJtUp1SRBjxwwwDQYJKoZIhvcNAQEL\n"
-//     + "BQAwVTELMAkGA1UEBhMCQVUxEzARBgNVBAgMClNvbWUtU3RhdGUxITAfBgNVBAoM\n"
-//     + "GEludGVybmV0IFdpZGdpdHMgUHR5IEx0ZDEOMAwGA1UEAwwFS2lvc2swHhcNMjUw\n"
-//     + "OTEzMTIxOTExWhcNMzUwOTExMTIxOTExWjBVMQswCQYDVQQGEwJBVTETMBEGA1UE\n"
-//     + "CAwKU29tZS1TdGF0ZTEhMB8GA1UECgwYSW50ZXJuZXQgV2lkZ2l0cyBQdHkgTHRk\n"
-//     + "MQ4wDAYDVQQDDAVLaW9zazCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEB\n"
-//     + "ALQFCpZ6LILJKVzbHSc+aHnXmcFlmhadI64Lme+YNTuFYPru6EINz4xlIWsY8NRB\n"
-//     + "BijvE8msF9r0lThzrRwyrKk35a15vONcKzF8ZJ5DVYqFM1ewLYG/8WDaJbHvrExE\n"
-//     + "jQ7qycxTxb37sRtYCbtR/+xDts3QBHXI8MoEwRMTd5txg7RJ3RotvVf5TOVQpyrS\n"
-//     + "ywEgJKghnz76YKivNtUWY7Ys5sMdjDpJgykfviFHsrrQS8exGFrEPr3IyE/BM+lM\n"
-//     + "y2df5KhDaNw/E5Iqvo0d8mzqslDLbS+3rLj/1gjxI8zkdeFVBBxuh1jNpB7knQcf\n"
-//     + "X2SeJalJeQhEf7o0xjF5QV8CAwEAAaNTMFEwHQYDVR0OBBYEFNkewVlXn3+RfsSE\n"
-//     + "ga50FkWdQ7awMB8GA1UdIwQYMBaAFNkewVlXn3+RfsSEga50FkWdQ7awMA8GA1Ud\n"
-//     + "EwEB/wQFMAMBAf8wDQYJKoZIhvcNAQELBQADggEBAEVqGWPfu3OXLAgHd3za7mdJ\n"
-//     + "EoKAZIdrEa8eHfa7Aef6NqBiFeXRpcGoEzM44vQvioGcNP7VaCaBYN9e1pAmWhE5\n"
-//     + "Jg4GGW9Y4hmwKJWRfE69/LjDergB2qncawflaAkFbK2hExI/0V8m8WPsVHQs9yk0\n"
-//     + "tpTkVtJI7ha66+ZGntdjMUQKhkSQzJBq22h7kbLNorCg3VHcaz+SokQkxbQtpTbe\n"
-//     + "ED20ndCi3WxC5EOaGAQZ8LV7FLH0BJbe/ItcjLSMYMhkDzxPFmAKyBWRa5z91Eph\n"
-//     + "pJ1j5ASZCSgh7k8/CKUxBDih31daNa+yxlZwunAcSq0heCGQ03x6Xj7NxKFZHCU=\n"
-//     + "-----END CERTIFICATE-----\n");
-// });
-
-qz.security.setCertificatePromise(function(resolve, reject) {
-    resolve(); // luôn resolve certificate
+qz.security.setCertificatePromise((resolve, reject) => {
+    resolve("-----BEGIN CERTIFICATE-----\n"
+    + "MIIDizCCAnOgAwIBAgIUcxNg1bGVpqmAawQJtUp1SRBjxwwwDQYJKoZIhvcNAQEL\n"
+    + "BQAwVTELMAkGA1UEBhMCQVUxEzARBgNVBAgMClNvbWUtU3RhdGUxITAfBgNVBAoM\n"
+    + "GEludGVybmV0IFdpZGdpdHMgUHR5IEx0ZDEOMAwGA1UEAwwFS2lvc2swHhcNMjUw\n"
+    + "OTEzMTIxOTExWhcNMzUwOTExMTIxOTExWjBVMQswCQYDVQQGEwJBVTETMBEGA1UE\n"
+    + "CAwKU29tZS1TdGF0ZTEhMB8GA1UECgwYSW50ZXJuZXQgV2lkZ2l0cyBQdHkgTHRk\n"
+    + "MQ4wDAYDVQQDDAVLaW9zazCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEB\n"
+    + "ALQFCpZ6LILJKVzbHSc+aHnXmcFlmhadI64Lme+YNTuFYPru6EINz4xlIWsY8NRB\n"
+    + "BijvE8msF9r0lThzrRwyrKk35a15vONcKzF8ZJ5DVYqFM1ewLYG/8WDaJbHvrExE\n"
+    + "jQ7qycxTxb37sRtYCbtR/+xDts3QBHXI8MoEwRMTd5txg7RJ3RotvVf5TOVQpyrS\n"
+    + "ywEgJKghnz76YKivNtUWY7Ys5sMdjDpJgykfviFHsrrQS8exGFrEPr3IyE/BM+lM\n"
+    + "y2df5KhDaNw/E5Iqvo0d8mzqslDLbS+3rLj/1gjxI8zkdeFVBBxuh1jNpB7knQcf\n"
+    + "X2SeJalJeQhEf7o0xjF5QV8CAwEAAaNTMFEwHQYDVR0OBBYEFNkewVlXn3+RfsSE\n"
+    + "ga50FkWdQ7awMB8GA1UdIwQYMBaAFNkewVlXn3+RfsSEga50FkWdQ7awMA8GA1Ud\n"
+    + "EwEB/wQFMAMBAf8wDQYJKoZIhvcNAQELBQADggEBAEVqGWPfu3OXLAgHd3za7mdJ\n"
+    + "EoKAZIdrEa8eHfa7Aef6NqBiFeXRpcGoEzM44vQvioGcNP7VaCaBYN9e1pAmWhE5\n"
+    + "Jg4GGW9Y4hmwKJWRfE69/LjDergB2qncawflaAkFbK2hExI/0V8m8WPsVHQs9yk0\n"
+    + "tpTkVtJI7ha66+ZGntdjMUQKhkSQzJBq22h7kbLNorCg3VHcaz+SokQkxbQtpTbe\n"
+    + "ED20ndCi3WxC5EOaGAQZ8LV7FLH0BJbe/ItcjLSMYMhkDzxPFmAKyBWRa5z91Eph\n"
+    + "pJ1j5ASZCSgh7k8/CKUxBDih31daNa+yxlZwunAcSq0heCGQ03x6Xj7NxKFZHCU=\n"
+    + "-----END CERTIFICATE-----\n");
 });
 
 function signWithPrivateKey(privateKeyPem, data) {
@@ -263,14 +259,14 @@ const privateKeyPem = `
 `;
 
 // Nạp hàm ký bằng private key
-// qz.security.setSignaturePromise((toSign) => (resolve, reject) => {
-//     try {
-//         const signature = signWithPrivateKey(privateKeyPem, toSign);
-//         resolve(signature);
-//     } catch (err) {
-//         reject(err);
-//     }
-// });
+qz.security.setSignaturePromise((toSign) => (resolve, reject) => {
+    try {
+        const signature = signWithPrivateKey(privateKeyPem, toSign);
+        resolve(signature);
+    } catch (err) {
+        reject(err);
+    }
+});
 
 function connectQZ() {
   if (!qz.websocket.isActive()) {
