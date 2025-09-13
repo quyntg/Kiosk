@@ -77,6 +77,10 @@ function login(username, password) {
     .then(res => res.json())
     .then(data => {
         if (data.success) {
+            // Xoá param username/password khỏi URL sau khi đăng nhập thành công
+            if (window.history && window.history.replaceState) {
+                window.history.replaceState({}, document.title, window.location.pathname + window.location.hash);
+            }
             // Chuyển đến trang chính
             if (data.role === 'admin') {
                 page('/admin');
