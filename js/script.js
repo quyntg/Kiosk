@@ -286,11 +286,24 @@ qz.websocket.connect()
   .then(() => console.log("✅ Connected to QZ Tray"))
   .catch(err => console.error("❌ Connection failed:", err));
 
-qz.security.setCertificatePromise(() => "../data/mycert.pfx");
+qz.security.setCertificatePromise((resolve, reject) => {
+    fetch("../data/public.crt")   // load public cert (không phải .pfx)
+        .then(res => res.text())
+        .then(resolve)
+        .catch(reject);
+});
 
-qz.security.setSignaturePromise(() => {
-    // Trả về promise resolve, QZ Tray tự ký
-    return Promise.resolve();
+qz.security.setSignaturePromise((toSign) => {
+    return (resolve, reject) => {
+        fetch("/sign", { // endpoint server của bạn
+            method: "POST",
+            body: JSON.stringify({ request: toSign }),
+            headers: { "Content-Type": "application/json" }
+        })
+        .then(res => res.text())
+        .then(resolve)
+        .catch(reject);
+    };
 });
 
 // Hiện modal kết quả lấy số
