@@ -219,30 +219,32 @@ function showResultModal(counter) {
         msg.innerHTML = `Bạn đã lấy số thành công!<br><span style='font-size: 2rem; color: #000; font-weight: 700;'>${counter}</span>`;
         btnPrint.style.display = '';
         btnPrint.onclick = function() {
-            // Dữ liệu in, có thể là text hoặc HTML tuỳ máy in hỗ trợ
-            const printData = `
-                Số thứ tự: ${counter}\n
-                ----------------------\n
-                Vui lòng chờ đến lượt\n
-            `;
-
-            // Địa chỉ WebPrint server, ví dụ Epson: http://localhost:8008/ (hoặc IP máy in)
-            fetch('http://localhost:8008/print', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'text/plain'
-                },
-                body: printData
-            })
-            .then(res => {
-                if (res.ok) {
-                    alert('In thành công!');
-                } else {
-                    alert('Không in được phiếu!');
-                }
-            })
-            .catch(() => {
-                alert('Không kết nối được WebPrint!');
+           // Kết nối QZ Tray
+            qz.websocket.connect().then(() => {
+                // Lấy danh sách máy in
+                return qz.printers.find();
+            }).then(printers => {
+                // Chọn máy in đầu tiên (hoặc tên máy in cụ thể)
+                const printer = printers[0];
+                // Nội dung in
+                const config = qz.configs.create(printer);
+                const data = [
+                    '\x1B\x40', // Reset máy in ESC/POS
+                    '      UỶ BAN NHÂN DÂN XÃ TÂY ĐÔ\n',
+                    '        THANH HOÁ\n',
+                    '------------------------------\n',
+                    '         PHIẾU SỐ THỨ TỰ\n',
+                    '------------------------------\n\n',
+                    '         SỐ: ' + counter + '\n\n',
+                    '   Vui lòng chờ đến lượt\n\n\n\n',
+                    '\x1D\x56\x41' // Cắt giấy (ESC/POS)
+                ];
+                // Gửi lệnh in
+                return qz.print(config, data);
+            }).then(() => {
+                alert('In thành công!');
+            }).catch(err => {
+                alert('Lỗi in: ' + err);
             });
         };
     } else {
