@@ -254,7 +254,7 @@ const privateKeyPem = `
     Hy8tTW2lz50QQxd1mnsZYkW8YZ/LAqDFC6YCmbLZpjhO7JT+b56CnEzWTAe11cBh
     VVD4LNCgIFE0jXud5Dzk9ELXyQtkiIdU91vNalUe/eKPhK3Fw+qiZAmItWZl6sov
     UbWrIEeZOz+PmXV7JRw+dc2O
-    -----END PRIVATE KEY-----  
+    -----END PRIVATE KEY-----
 `;
 
 // Nạp hàm ký bằng private key
