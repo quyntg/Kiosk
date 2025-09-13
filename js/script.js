@@ -220,9 +220,8 @@ qz.security.setCertificatePromise((resolve, reject) => {
 
 function signWithPrivateKey(privateKeyPem, data) {
     const privateKey = forge.pki.privateKeyFromPem(privateKeyPem);
-    // QZ Tray thường truyền vào data là chuỗi hex
-    const md = forge.md.sha1.create(); // hoặc sha256 nếu QZ yêu cầu
-    // Nếu data là hex, chuyển về bytes
+    const md = forge.md.sha1.create();
+    // Nếu data là chuỗi hex (QZ Tray truyền vào), phải chuyển về bytes
     md.update(forge.util.hexToBytes(data));
     const signature = privateKey.sign(md);
     return forge.util.encode64(signature);
@@ -261,11 +260,8 @@ const privateKeyPem = `
 
 // Nạp hàm ký bằng private key
 qz.security.setSignaturePromise((toSign) => (resolve, reject) => {
-    console.log("Signing data:", toSign);
-        console.log("privateKeyPem:", privateKeyPem);
     try {
         const signature = signWithPrivateKey(privateKeyPem, toSign);
-        console.log("signature:", signature );
         resolve(signature);
     } catch (err) {
         reject(err);
