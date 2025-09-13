@@ -252,20 +252,17 @@ function showResultModal(counter) {
                 let text = [
                     '\x1B\x40', // Reset
                     '\x1B\x61\x01', // Căn giữa
+                    '\x1D\x21\x11', // Font double width & height (toàn bộ phiếu)
                     removeVietnameseTones('UY BAN NHAN DAN XA TAY DO') + '\n',
                     removeVietnameseTones('THANH HOA') + '\n',
                     '------------------------------------------\n',
-                    '\x1B\x61\x01', // Căn giữa
                     removeVietnameseTones('PHIEU SO THU TU') + '\n',
                     '------------------------------------------\n\n',
-                    '\x1B\x61\x01', // Căn giữa
-                    '\x1D\x21\x11', // Font double width & height
-                    'S O : ' + counter + '\n',
-                    '\x1D\x21\x00', // Trở lại font thường
+                    counter + '\n', // In số thật to, không có chữ S O
                     '\n',
-                    '\x1B\x61\x01', // Căn giữa
                     removeVietnameseTones('Vui long cho den luot') + '\n',
                     '\n\n\n',
+                    '\x1D\x21\x00', // Trở lại font thường
                     '\x1D\x56\x41' // Cắt giấy
                 ];
                 const data = [
