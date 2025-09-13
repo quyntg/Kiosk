@@ -250,8 +250,7 @@ function showResultModal(counter) {
                 const cfg = qz.configs.create(printer);
                 // Lệnh ESC/POS
                 let text = [
-                    '\x1D\x56\x41', // Cắt giấy
-                    // Bỏ lệnh reset ESC @ để tránh bị in ký tự @
+                    '\x1D\x56\x41', // Cắt giấy trước khi in phiếu mới
                     '\x1B\x61\x01', // Căn giữa
                     '\x1D\x21\x01', // Font nhỏ (width x2, height x1)
                     removeVietnameseTones('UY BAN NHAN DAN XA TAY DO') + '\n',
@@ -265,10 +264,10 @@ function showResultModal(counter) {
                     '\x1D\x21\x01', // Quay lại font nhỏ cho dòng dưới
                     '\n',
                     removeVietnameseTones('Vui long cho den luot') + '\n',
-                    // Thêm đoạn trắng vừa đủ để thuận tiện lấy số
-                    '\n\n\n\n\n',
+                    '\n\n\n\n\n', // Đoạn trắng vừa đủ
                     '\x1D\x21\x00', // Trở lại font thường
-                    '\x1D\x56\x41' // Cắt giấy
+                    '\x1D\x56\x41', // Cắt giấy sau khi in phiếu
+                    '\x1D\x56\x41'
                 ];
                 const data = [
                     { type: 'raw', format: 'plain', data: text.join('') }
