@@ -310,15 +310,49 @@ async function listPrinters() {
     console.log("Danh sách máy in:", data);
 }
 
-async function printReceipt(text) {
+function removeVietnameseTones(str) {
+return str.normalize('NFD')
+        .replace(/\p{Diacritic}/gu, '')
+        .replace(/đ/g, 'd')
+        .replace(/Đ/g, 'D');
+}
+
+function buildTicket(counter) {
+    let parts = [
+        '\x1B\x61\x01', // Căn giữa
+        '\x1D\x21\x01', // Font nhỏ
+        removeVietnameseTones('UY BAN NHAN DAN XA TAY DO') + '\n',
+        removeVietnameseTones('THANH HOA') + '\n',
+        '------------------------------------------\n',
+        removeVietnameseTones('PHIEU SO THU TU') + '\n',
+        '------------------------------------------\n\n',
+        '\x1B\x61\x01', // Căn giữa
+        '\x1D\x21\x33', // Font lớn
+        counter + '\n',
+        '\x1D\x21\x01', // Font nhỏ lại
+        '\n',
+        removeVietnameseTones('Vui long cho den luot') + '\n',
+        '\n\n\n', // vài dòng trắng
+        '\x1D\x21\x00', // Font thường
+        '\x1D\x56\x42\x10' // Feed 16 dòng + cut
+    ];
+
+    return parts.join(""); // trả về raw string
+}
+
+// Hàm encode sang base64 trong browser
+function toBase64(str) {
+    return btoa(
+        Array.from(str).map(c => String.fromCharCode(c.charCodeAt(0) & 0xFF)).join("")
+    );
+}
+
+async function printTicket(counter) {
     const apiKey = "cmIEqzm5rM-hHvKxK2v_afDZ2XzGxXjr9s08HkWL9v0"; // thay bằng API Key bạn lấy từ PrintNode
     const printerId = 74718076; // thay bằng ID của máy in (lấy từ PrintNode Dashboard)
 
-    // ESC/POS command cho hóa đơn
-    let escposCommands = text.join("");
-
-    // Encode Base64 để gửi qua PrintNode
-    const contentBase64 = btoa(unescape(encodeURIComponent(escposCommands)));
+    const raw = buildTicket(counter);
+    const contentBase64 = toBase64(raw);
 
     const body = {
         printerId: printerId,
@@ -327,17 +361,14 @@ async function printReceipt(text) {
         content: contentBase64
     };
 
-    const res = await fetch("https://api.printnode.com/printjobs", {
+    await fetch("https://api.printnode.com/printjobs", {
         method: "POST",
         headers: {
-            "Authorization": "Basic " + Buffer.from(apiKey + ":").toString("base64"),
+            "Authorization": "Basic " + btoa(apiKey),
             "Content-Type": "application/json"
         },
         body: JSON.stringify(body)
     });
-
-    const data = await res.json();
-    console.log("Kết quả in:", data);
 }
 
 
@@ -378,39 +409,9 @@ function showResultModal(counter) {
         btnPrint.style.display = '';
         btnPrint.onclick = function() {
             // Hàm bỏ dấu tiếng Việt
-            function removeVietnameseTones(str) {
-                return str.normalize('NFD')
-                .replace(/\p{Diacritic}/gu, '')
-                .replace(/đ/g, 'd')
-                .replace(/Đ/g, 'D');
-            }
-
-            function buildTicket(counter) {
-                let parts = [
-                    '\x1B\x61\x01', // Căn giữa
-                    '\x1D\x21\x01', // Font nhỏ
-                    removeVietnameseTones('UY BAN NHAN DAN XA TAY DO') + '\n',
-                    removeVietnameseTones('THANH HOA') + '\n',
-                    '------------------------------------------\n',
-                    removeVietnameseTones('PHIEU SO THU TU') + '\n',
-                    '------------------------------------------\n\n',
-                    '\x1B\x61\x01', // Căn giữa
-                    '\x1D\x21\x33', // Font lớn
-                    counter + '\n',
-                    '\x1D\x21\x01', // Font nhỏ lại
-                    '\n',
-                    removeVietnameseTones('Vui long cho den luot') + '\n',
-                    '\n\n\n', // vài dòng trắng
-                    '\x1D\x21\x00', // Trở lại font thường
-                    '\x1D\x56\x42\x10' // feed 16 dòng rồi cut
-                ];
-
-                // Gộp lại thành buffer nhị phân
-                return Buffer.from(parts.join(""), "binary");
-            }
-
-            let text = buildTicket(counter);
-            printReceipt(text);
+            printTicket(counter).then(() => { 
+                console.log("✅ In thành công");
+            });
             // Kết nối QZ Tray
             // connectQZ().then(() => {
             //     return qz.printers.getDefault(); // lấy máy in mặc định
