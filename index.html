@@ -8,9 +8,15 @@
     <script src="https://unpkg.com/page/page.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-    <script src="../js/sha256.min.js"></script>
-    <script src="../js/rsvp.min.js"></script>
-    <script src="../js/qz tray.js"></script>
+
+    <!-- Polyfill SHA-256 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sha256/0.9.0/sha256.min.js"></script>
+
+    <!-- RSVP.js (Promise polyfill) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/rsvp/3.6.2/rsvp.min.js"></script>
+
+    <!-- QZ Tray JS (tải từ localhost, do app QZ Tray cung cấp) -->
+    <script src="https://localhost:8181/qz-tray.js"></script>
     <link rel="stylesheet" href="../css/style.css">
     <script src="../data/data.js"></script>
     <script src="../js/script.js"></script>
