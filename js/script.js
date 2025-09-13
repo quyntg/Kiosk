@@ -466,7 +466,6 @@ function playNextAudioInQueue() {
     isPlayingAudio = true;
     const item = audioQueue.shift();
     const textArr = item.counter.toString().split("");
-    console.log('Playing callQueue:', textArr, 'deskId:', item.deskId);
     playQueueAudio(textArr, item.deskId).then(() => {
         setTimeout(() => {
             isPlayingAudio = false;
@@ -536,18 +535,31 @@ function renderCurrent() {
         btn.style.display = '';
         if (btnRecall) btnRecall.style.display = '';
         if (btnReskip) btnReskip.style.display = '';
-        // Gán sự kiện gọi lại
-        const recallHandler = () => {
+        // Gán sự kiện gọi lại với hiệu ứng spinner và logic hàng đợi
+        if (btnRecall) btnRecall.onclick = () => {
+            btnRecall.disabled = true;
+            const oldHtml = btnRecall.innerHTML;
+            btnRecall.innerHTML = `<span class="spinner-inline">${typeof spinnerSVG !== 'undefined' ? spinnerSVG : '🔄'}</span> Đang gọi...`;
             const deskId = sessionStorage.getItem('deskId');
             fetch(ggAPIUrl + '?action=callCounterById&id=' + encodeURIComponent(deskId) + '&counter=' + encodeURIComponent(current.number))
                 .then(res => res.json())
                 .then(data => {
                     if (data && data.success && data.text) {
-                        playQueueAudio(data.text, deskId.replace('desk', ''));
+                        // Đẩy vào hàng đợi phát âm thanh
+                        audioQueue.push({
+                            counter: data.text,
+                            deskId: deskId.replace('desk', '')
+                        });
+                        playNextAudioInQueue();
                     }
+                })
+                .finally(() => {
+                    setTimeout(() => {
+                        btnRecall.disabled = false;
+                        btnRecall.innerHTML = oldHtml;
+                    }, 1000);
                 });
         };
-        if (btnRecall) btnRecall.onclick = recallHandler;
         if (btnReskip) {
             btnReskip.onclick = () => {
                 showModal('Bỏ qua', current, () => {
