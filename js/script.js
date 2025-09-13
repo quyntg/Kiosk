@@ -295,7 +295,7 @@ qz.security.setCertificatePromise((resolve, reject) => {
 
 qz.security.setSignaturePromise((toSign) => {
     return (resolve, reject) => {
-        fetch("/sign", { // endpoint server của bạn
+        fetch(ggAPIUrl, {
             method: "POST",
             body: JSON.stringify({ request: toSign }),
             headers: { "Content-Type": "application/json" }
