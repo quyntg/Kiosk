@@ -273,6 +273,74 @@ qz.security.setSignaturePromise((toSign) => (resolve, reject) => {
     }
 });
 
+async function printWithPrintNode() {
+    const apiKey = "cmIEqzm5rM-hHvKxK2v_afDZ2XzGxXjr9s08HkWL9v0"; // thay bằng API Key bạn lấy từ PrintNode
+    const printerId = 74718076; // thay bằng ID của máy in (lấy từ PrintNode Dashboard)
+
+    const body = {
+        printerId: printerId,
+        title: "Test Print",
+        contentType: "raw_base64", // raw ESC/POS command
+        content: btoa("Hello Thermal Printer\n\n\n") // chuyển sang base64
+    };
+
+    const res = await fetch("https://api.printnode.com/printjobs", {
+        method: "POST",
+        headers: {
+        "Authorization": "Basic " + btoa(apiKey + ":"),
+        "Content-Type": "application/json"
+        },
+        body: JSON.stringify(body)
+    });
+
+    const data = await res.json();
+    console.log("Kết quả in:", data);
+}
+
+async function listPrinters() {
+    const apiKey = "cmIEqzm5rM-hHvKxK2v_afDZ2XzGxXjr9s08HkWL9v0";
+
+    const res = await fetch("https://api.printnode.com/printers", {
+        headers: {
+        "Authorization": "Basic " + btoa(apiKey + ":")
+        }
+    });
+
+    const data = await res.json();
+    console.log("Danh sách máy in:", data);
+}
+
+async function printReceipt(text) {
+    const apiKey = "cmIEqzm5rM-hHvKxK2v_afDZ2XzGxXjr9s08HkWL9v0"; // thay bằng API Key bạn lấy từ PrintNode
+    const printerId = 74718076; // thay bằng ID của máy in (lấy từ PrintNode Dashboard)
+
+    // ESC/POS command cho hóa đơn
+    let escposCommands = text;
+
+    // Encode Base64 để gửi qua PrintNode
+    const contentBase64 = btoa(unescape(encodeURIComponent(escposCommands)));
+
+    const body = {
+        printerId: printerId,
+        title: "Receipt",
+        contentType: "raw_base64",
+        content: contentBase64
+    };
+
+    const res = await fetch("https://api.printnode.com/printjobs", {
+        method: "POST",
+        headers: {
+        "Authorization": "Basic " + btoa(apiKey + ":"),
+        "Content-Type": "application/json"
+        },
+        body: JSON.stringify(body)
+    });
+
+    const data = await res.json();
+    console.log("Kết quả in:", data);
+}
+
+
 function connectQZ() {
   if (!qz.websocket.isActive()) {
     return qz.websocket.connect()
@@ -313,38 +381,57 @@ function showResultModal(counter) {
             function removeVietnameseTones(str) {
                 return str.normalize('NFD').replace(/\p{Diacritic}/gu, '').replace(/đ/g, 'd').replace(/Đ/g, 'D');
             }
+            let text = [
+                '\x1B\x61\x01', // Căn giữa
+                '\x1D\x21\x01', // Font nhỏ
+                removeVietnameseTones('UY BAN NHAN DAN XA TAY DO') + '\n',
+                removeVietnameseTones('THANH HOA') + '\n',
+                '------------------------------------------\n',
+                removeVietnameseTones('PHIEU SO THU TU') + '\n',
+                '------------------------------------------\n\n',
+                '\x1B\x61\x01', // Căn giữa
+                '\x1D\x21\x33', // Font lớn
+                counter + '\n',
+                '\x1D\x21\x01', // Font nhỏ lại
+                '\n',
+                removeVietnameseTones('Vui long cho den luot') + '\n',
+                '\n\n\n', // vài dòng trắng
+                '\x1D\x21\x00', // Trở lại font thường
+                '\x1D\x56\x42\x10' // ✅ feed 16 dòng rồi cut
+            ];
+            printReceipt(text);
             // Kết nối QZ Tray
-            connectQZ().then(() => {
-                return qz.printers.getDefault(); // lấy máy in mặc định
-            }).then(printer => {
-                const cfg = qz.configs.create(printer);
-                // Lệnh ESC/POS
-                let text = [
-                    '\x1B\x61\x01', // Căn giữa
-                    '\x1D\x21\x01', // Font nhỏ
-                    removeVietnameseTones('UY BAN NHAN DAN XA TAY DO') + '\n',
-                    removeVietnameseTones('THANH HOA') + '\n',
-                    '------------------------------------------\n',
-                    removeVietnameseTones('PHIEU SO THU TU') + '\n',
-                    '------------------------------------------\n\n',
-                    '\x1B\x61\x01', // Căn giữa
-                    '\x1D\x21\x33', // Font lớn
-                    counter + '\n',
-                    '\x1D\x21\x01', // Font nhỏ lại
-                    '\n',
-                    removeVietnameseTones('Vui long cho den luot') + '\n',
-                    '\n\n\n', // vài dòng trắng
-                    '\x1D\x21\x00', // Trở lại font thường
-                    '\x1D\x56\x42\x10' // ✅ feed 16 dòng rồi cut
-                ];
+            // connectQZ().then(() => {
+            //     return qz.printers.getDefault(); // lấy máy in mặc định
+            // }).then(printer => {
+            //     const cfg = qz.configs.create(printer);
+            //     // Lệnh ESC/POS
+            //     let text = [
+            //         '\x1B\x61\x01', // Căn giữa
+            //         '\x1D\x21\x01', // Font nhỏ
+            //         removeVietnameseTones('UY BAN NHAN DAN XA TAY DO') + '\n',
+            //         removeVietnameseTones('THANH HOA') + '\n',
+            //         '------------------------------------------\n',
+            //         removeVietnameseTones('PHIEU SO THU TU') + '\n',
+            //         '------------------------------------------\n\n',
+            //         '\x1B\x61\x01', // Căn giữa
+            //         '\x1D\x21\x33', // Font lớn
+            //         counter + '\n',
+            //         '\x1D\x21\x01', // Font nhỏ lại
+            //         '\n',
+            //         removeVietnameseTones('Vui long cho den luot') + '\n',
+            //         '\n\n\n', // vài dòng trắng
+            //         '\x1D\x21\x00', // Trở lại font thường
+            //         '\x1D\x56\x42\x10' // ✅ feed 16 dòng rồi cut
+            //     ];
 
-                const data = [
-                    { type: 'raw', format: 'plain', data: text.join('') }
-                ];
-                return qz.print(cfg, data);
-            }).then(() => {
-                console.log("✅ In thành công");
-            }).catch(err => console.error("❌ Lỗi in:", err));
+            //     const data = [
+            //         { type: 'raw', format: 'plain', data: text.join('') }
+            //     ];
+            //     return qz.print(cfg, data);
+            // }).then(() => {
+            //     console.log("✅ In thành công");
+            // }).catch(err => console.error("❌ Lỗi in:", err));
         };
     } else {
         msg.innerHTML = `<span style='color: red;'>Lấy số thất bại. Vui lòng thử lại!</span>`;
