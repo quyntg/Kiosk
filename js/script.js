@@ -59,6 +59,7 @@ function login(username, password) {
             if (data.role === 'admin') {
                 page('/admin');
             } else if (data.role === 'gate') {
+                checkFirstLoginGateToday()
                 page('/gate');
             } else if (data.role === 'desk') {
                 sessionStorage.setItem('deskId', data.id);
@@ -726,8 +727,8 @@ function resetNode(path) {
     .catch(err => console.error("❌ Lỗi khi reset:", err));
 }
 
-function checkFirstLoginGateToday(username) {
-    const key = 'lastGateLogin_' + username;
+function checkFirstLoginGateToday() {
+    const key = 'lastLoginGate';
     const today = new Date().toISOString().slice(0, 10); // yyyy-mm-dd
     const last = localStorage.getItem(key);
     if (last !== today) {
