@@ -735,7 +735,5 @@ function checkFirstLoginGateToday() {
         localStorage.setItem(key, today);
         resetNode("/callQueue");
         resetNode("/counter");
-        return true; // Lần đầu trong ngày
     }
-    return false; // Đã đăng nhập hôm nay rồi
 }
