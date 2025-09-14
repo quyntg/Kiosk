@@ -32,21 +32,21 @@
     <script>
         page('/', () => {
             loadPage('html/login.html', 'app');
-            setTimeout(() => {        
+            setTimeout(() => {
                 // document.body.setAttribute('data-page', 'login');
                 const spinner = document.getElementById('loginSpinner');
                 if (spinner && (!spinner.innerHTML || spinner.innerHTML.trim() === '')) {
                     if (typeof spinnerSVG !== 'undefined') spinner.innerHTML = spinnerSVG;
                 }
+                // Luôn gán lại event submit cho form login để ngăn submit mặc định
                 let loginForm = document.querySelector('.login-form');
                 if (loginForm) {
-                    loginForm.addEventListener('submit', function(event) {
+                    loginForm.onsubmit = function(event) {
                         event.preventDefault();
-                        // Lấy giá trị từ form
                         let username = document.getElementById('username').value;
                         let password = document.getElementById('password').value;
                         login(username, password);
-                    });
+                    };
                 }
             }, 100);
         });
