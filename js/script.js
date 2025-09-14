@@ -718,3 +718,23 @@ function showModal(action, item, onOk) {
         modal.style.display = 'none';
     };
 }
+
+// Xóa toàn bộ node
+function resetNode(path) {
+  set(ref(db, path), null)
+    .then(() => console.log("✅ Dữ liệu đã reset!"))
+    .catch(err => console.error("❌ Lỗi khi reset:", err));
+}
+
+function checkFirstLoginGateToday(username) {
+    const key = 'lastGateLogin_' + username;
+    const today = new Date().toISOString().slice(0, 10); // yyyy-mm-dd
+    const last = localStorage.getItem(key);
+    if (last !== today) {
+        localStorage.setItem(key, today);
+        resetNode("/callQueue");
+        resetNode("/counter");
+        return true; // Lần đầu trong ngày
+    }
+    return false; // Đã đăng nhập hôm nay rồi
+}
