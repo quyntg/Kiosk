@@ -722,9 +722,10 @@ function showModal(action, item, onOk) {
 
 // Xóa toàn bộ node
 function resetNode(path) {
-  set(ref(db, path), null)
-    .then(() => console.log("✅ Dữ liệu đã reset!"))
-    .catch(err => console.error("❌ Lỗi khi reset:", err));
+    console.log("vào reset!")
+    set(ref(db, path), null)
+        .then(() => console.log("✅ Dữ liệu đã reset!"))
+        .catch(err => console.error("❌ Lỗi khi reset:", err));
 }
 
 function checkFirstLoginGateToday() {
