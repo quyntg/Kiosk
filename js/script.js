@@ -330,6 +330,8 @@ function showResultModal(counter) {
             }).finally(() => {
                 btnPrint.disabled = false;
                 btnPrint.innerHTML = oldHtml;
+                // Đóng modal khi in thành công
+                modal.style.display = 'none';
             });
         };
     } else {
