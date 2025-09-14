@@ -38,17 +38,30 @@
                 if (spinner && (!spinner.innerHTML || spinner.innerHTML.trim() === '')) {
                     if (typeof spinnerSVG !== 'undefined') spinner.innerHTML = spinnerSVG;
                 }
-                // Luôn gán lại event submit cho form login để ngăn submit mặc định
-                let loginForm = document.querySelector('.login-form');
-                if (loginForm) {
-                    loginForm.onsubmit = function(event) {
-                        event.preventDefault();
-                        let username = document.getElementById('username').value;
-                        let password = document.getElementById('password').value;
-                        login(username, password);
-                    };
+                // Đảm bảo gán lại event submit cho form login sau khi DOM đã có form
+                function attachLoginHandler() {
+                    let loginForm = document.querySelector('.login-form');
+                    if (loginForm) {
+                        loginForm.onsubmit = function(event) {
+                            event.preventDefault();
+                            let username = document.getElementById('username').value;
+                            let password = document.getElementById('password').value;
+                            login(username, password);
+                        };
+                    } else {
+                        // Nếu form chưa có, thử lại sau 100ms (tối đa 10 lần)
+                        if (typeof window._loginTryCount === 'undefined') window._loginTryCount = 0;
+                        if (window._loginTryCount < 10) {
+                            window._loginTryCount++;
+                            setTimeout(attachLoginHandler, 100);
+                        } else {
+                            window._loginTryCount = 0;
+                        }
+                    }
                 }
-            }, 100);
+                window._loginTryCount = 0;
+                attachLoginHandler();
+            }, 200);
         });
 
         page('/gate', () => {
