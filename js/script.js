@@ -59,7 +59,6 @@ function login(username, password) {
             if (data.role === 'admin') {
                 page('/admin');
             } else if (data.role === 'gate') {
-                checkFirstLoginGateToday()
                 page('/gate');
             } else if (data.role === 'desk') {
                 sessionStorage.setItem('deskId', data.id);

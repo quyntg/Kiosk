@@ -67,7 +67,8 @@
         page('/gate', () => {
             loadPage('html/gate.html', 'app');
             setTimeout(() => {           
-                document.body.removeAttribute('data-page');
+                document.body.removeAttribute('data-page');                
+                checkFirstLoginGateToday();
                 loadProcedureList();
                 listenCallQueueAndPlay();
             }, 1000);
