@@ -9,23 +9,23 @@ const db = firebase.database();
 function loadPage(url, id) {
 	const app = document.getElementById(id);
     fetch(url)
-    .then(res => res.text())
-    .then(html => {
-        app.innerHTML = html;
-        // Nếu là trang login thì luôn ẩn spinner khi load
-        if (url.includes('login')) {
-            setTimeout(() => {
-                var spinner = document.getElementById('loginSpinner');
-                if (spinner) {
-                    spinner.style.display = 'none';
-                    spinner.innerHTML = '';
-                }
-            }, 10);
-        }
-    })
-    .catch(() => {
-        
-    });
+        .then(res => res.text())
+        .then(html => {
+            app.innerHTML = html;
+            // Nếu là trang login thì luôn ẩn spinner khi load
+            if (url.includes('login')) {
+                setTimeout(() => {
+                    var spinner = document.getElementById('loginSpinner');
+                    if (spinner) {
+                        spinner.style.display = 'none';
+                        spinner.innerHTML = '';
+                    }
+                }, 10);
+            }
+        })
+        .catch(() => {
+            
+        });
 }
 
 function login(username, password) {

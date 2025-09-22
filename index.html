@@ -31,8 +31,7 @@
 	</footer>
     <script>
         page('/', () => {
-            loadPage('html/login.html', 'app');
-            setTimeout(() => {
+            loadPage('html/login.html', 'app').then(() => {
                 // document.body.setAttribute('data-page', 'login');
                 const spinner = document.getElementById('loginSpinner');
                 if (spinner && (!spinner.innerHTML || spinner.innerHTML.trim() === '')) {
@@ -61,22 +60,20 @@
                 }
                 window._loginTryCount = 0;
                 attachLoginHandler();
-            }, 200);
+            });
         });
 
         page('/gate', () => {
-            loadPage('html/gate.html', 'app');
-            setTimeout(() => {           
+            loadPage('html/gate.html', 'app').then(() => {
                 document.body.removeAttribute('data-page');                
                 checkFirstLoginGateToday();
                 loadProcedureList();
                 listenCallQueueAndPlay();
-            }, 1000);
+            });
         });
 
         page('/desk', () => {
-            loadPage('html/desk.html', 'app');
-            setTimeout(() => {           
+            loadPage('html/desk.html', 'app').then(() => {
                 document.body.removeAttribute('data-page');
                 let isFirstDeskLoad = true;
                 showDeskSpinner();
@@ -98,7 +95,7 @@
                     loadDeskQueue(1);
                 });
                 renderCurrent();
-            }, 100);
+            });
         });
         
         page({ hashbang: true });
