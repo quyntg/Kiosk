@@ -8,10 +8,10 @@ const db = firebase.database();
 
 function loadPage(url, id) {
 	const app = document.getElementById(id);
-    fetch(url)
-        .then(res => res.text())
-        .then(html => {
-            app.innerHTML = html;
+    return fetch(url)
+		.then(res => res.text())
+		.then(html => {
+			app.innerHTML = html;
             // Nếu là trang login thì luôn ẩn spinner khi load
             if (url.includes('login')) {
                 setTimeout(() => {
@@ -22,11 +22,20 @@ function loadPage(url, id) {
                     }
                 }, 10);
             }
-        })
-        .catch(() => {
-            
-        });
+		})
+		.catch(() => {
+			app.innerHTML = "<h2>Page not found</h2>";
+		});
 }
+
+return fetch(url)
+		.then(res => res.text())
+		.then(html => {
+			app.innerHTML = html;
+		})
+		.catch(() => {
+			app.innerHTML = "<h2>Page not found</h2>";
+		});
 
 function login(username, password) {
     var errorMsg = document.getElementById('errorMsg');
