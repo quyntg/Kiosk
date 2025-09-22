@@ -28,15 +28,6 @@ function loadPage(url, id) {
 		});
 }
 
-return fetch(url)
-		.then(res => res.text())
-		.then(html => {
-			app.innerHTML = html;
-		})
-		.catch(() => {
-			app.innerHTML = "<h2>Page not found</h2>";
-		});
-
 function login(username, password) {
     var errorMsg = document.getElementById('errorMsg');
     var btn = document.getElementById('loginBtn');
